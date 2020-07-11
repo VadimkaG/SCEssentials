@@ -1,0 +1,106 @@
+name: SCEssentials
+version: 1.0
+main: ru.seriouscompany.essentials.SCCore
+author: Vadimka
+commands:
+  afk:
+    description: Афк
+    usage: /afk
+  pinfo:
+    description: Информаци о игроке
+    usage: /pinfo <Игрок>
+  fly:
+    description: Включить полет
+    usage: /fly [Игрок]
+  scereload:
+    description: Перезагрузка плагина
+    usage: /scereload
+  heal:
+    description: Установить здоровье
+    usage: /heal <Количество/Игрок> [кол здоровья]
+  feed:
+    description: Накормить игрока
+    usage: /feed [Игрок]
+  oi:
+    description: Открыть инвентарь игрока
+    usage: /oi <Игрок>
+  oe:
+    description: Открыть эндер сундук игрока
+    usage: /oe <Игрок>
+  sleepignore:
+    description: Игнорировать сон
+    usage: /sleepignore
+  tpw:
+    description: Переместиться в спаун указанного мира
+    usage: /tpw <Мир> [Игрок]
+  suicide:
+    description: Самоуничтожиться
+    usage: /suicide
+permissions:
+  scessentials.*:
+    description: Все преимущества плагина
+    default: op
+    children:
+      scessentials.afk: true
+      scessentials.feed: true
+      scessentials.fly.*: true
+      scessentials.heal.*: true
+      scessentials.openender: true
+      scessentials.openinventory: true
+      scessentials.pinfo: true
+      scessentials.reload: true
+      scessentials.sleepignore: true
+      scessentials.teleportworld: true
+      scessentials.suicide: true
+  scessentials.suicide:
+    description: Дает преимущества суицида
+    default: true
+  scessentials.afk:
+    description: Дает возможность отлучиться от компьютера
+    default: true
+  scessentials.feed:
+    description: Дает преимущество восстановить голод
+    default: false
+  scessentials.fly.*:
+    description: Дает преимущество включить полет себе и другим
+    default: false
+    children:
+      scessentials.fly: true
+      scessentials.fly.other: true
+  scessentials.fly:
+    description: Дает преимущество включить полет
+    default: false
+  scessentials.fly.other:
+    description: Дает преимущество включить полет другим
+    default: false
+  scessentials.heal.*:
+    description: Дает преимущество вылечить себя и других
+    default: false
+    children:
+      scessentials.heal: true
+      scessentials.heal.other: true
+  scessentials.heal:
+    description: Дает преимущество вылечить себя
+    default: false
+  scessentials.heal.other:
+    description: Дает преимущество вылечить других
+    default: false
+  scessentials.openender:
+    description: Дает преимущество открыть эндер-сундук
+    default: false
+  scessentials.openinventory:
+    description: Дает преимущество открыть инвентарь игроков
+    default: false
+  scessentials.pinfo:
+    description: Показывает информацию об игроке
+    default: false
+  scessentials.reload:
+    description: Перезагружает конфигурацию плагина
+    default: false
+  scessentials.sleepignore:
+    description: Дает преимущество игнорировать сон
+    default: false
+  scessentials.teleportworld:
+    description: Дает преимущество телепортироваться между мирами
+    default: false
+
