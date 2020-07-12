@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+@Deprecated
 public class DataBase {
 	protected Connection connection = null;
 	

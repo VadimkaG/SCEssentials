@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import ru.seriouscompany.essentials.Config;
 import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.PlayerFreezeContainer;
 
@@ -16,40 +17,42 @@ public class CPlayerInfo implements CommandExecutor {
 			if (args.length != 1) return false;
 			Player target = SCCore.getInstance().getServer().getPlayer(args[0]);
 			if (target == null) {
-				sender.sendMessage("Игрока с таким ником не существует");
+				sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
 				return true;
 			}
-			sender.sendMessage("========== Статистика игрока "+target.getName()+" ==========");
-			sender.sendMessage("Мир: "
+			sender.sendMessage(Config.PLAYER_STAT.replace("%PLAYER%", target.getName()));
+			sender.sendMessage(Config.WORLD+": "
 					+ target.getLocation().getWorld() + "("
 					+ target.getLocation().getBlockX() + ","
 					+ target.getLocation().getBlockY() + ", "
 					+ target.getLocation().getBlockZ() + ")");
 			sender.sendMessage("IP: " + target.getAddress().getAddress().getHostAddress());
-			sender.sendMessage("Игровой режим: "+target.getGameMode().name());
-			sender.sendMessage("Здоровье: "+String.valueOf(target.getHealth()));
-			sender.sendMessage("Сытость: "+String.valueOf(target.getFoodLevel()));
+			sender.sendMessage(Config.GAME_MODE+": "+target.getGameMode().name());
+			sender.sendMessage(Config.HEALTH+": "+String.valueOf(target.getHealth()));
+			sender.sendMessage(Config.FOOD_LEVEL+": "+String.valueOf(target.getFoodLevel()));
+			sender.sendMessage(Config.EXP+": "+String.valueOf(target.getLevel())+" lvl "+String.valueOf(target.getTotalExperience())+" points");
 			if (target.isOp())
-				sender.sendMessage("Оператор: да");
+				sender.sendMessage(Config.OPERATOR+": "+Config.YES);
 			else
-				sender.sendMessage("Оператор: нет");
+				sender.sendMessage(Config.OPERATOR+": "+Config.NO);
 			if (PlayerFreezeContainer.contains(target))
-				sender.sendMessage("Заморожен: да");
+				sender.sendMessage(Config.FREEZED+": "+Config.YES);
 			else
-				sender.sendMessage("Заморожен: нет");
+				sender.sendMessage(Config.FREEZED+": "+Config.NO);
 			
 			if (CAFK.isPlayerAfk(target.getName()))
-				sender.sendMessage("АФК: да");
+				sender.sendMessage("AFK: "+Config.YES);
 			else
-				sender.sendMessage("АФК: нет");
+				sender.sendMessage("AFK: "+Config.NO);
 			
 			if (target.isFlying())
-				sender.sendMessage("Летает: да");
+				sender.sendMessage(Config.FLYING+": "+Config.YES);
 			else
-				sender.sendMessage("Летает: нет");
-			sender.sendMessage("====================");
+				sender.sendMessage(Config.FLYING+": "+Config.NO);
+			if (Config.PLAYER_STAT.length() > 1)
+				sender.sendMessage(Config.PLAYER_STAT_FOOTER);
 		} else
-			sender.sendMessage("Вам не разрешено использывать данную команду");
+			sender.sendMessage(Config.PERMISSION_DENY);
 		return true;
 	}
 

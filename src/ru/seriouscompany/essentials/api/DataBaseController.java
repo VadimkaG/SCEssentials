@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ru.seriouscompany.essentials.SCCore;
 
+@Deprecated
 public abstract class DataBaseController {
 	/**
 	 * Получить путь к главной конфигурации плагина

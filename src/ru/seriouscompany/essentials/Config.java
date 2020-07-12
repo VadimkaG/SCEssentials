@@ -54,6 +54,21 @@ public abstract class Config {
 	public static String SERVER_OFF_MINUTES = "минут";
 	public static String SERVER_OFF_HOURS = "часов";
 	
+	public static String PLAYER_STAT = "========== Статистика игрока %PLAYER% ==========";
+	public static String PLAYER_STAT_FOOTER = "====================";
+	
+	public static String YES = "Да";
+	public static String NO = "Нет";
+	
+	public static String WORLD = "Мир";
+	public static String GAME_MODE = "Игровой режим";
+	public static String HEALTH = "Здоровье";
+	public static String FOOD_LEVEL = "Сытость";
+	public static String EXP = "Опыт";
+	public static String OPERATOR = "Оператор";
+	public static String FREEZED = "Заморожен";
+	public static String FLYING = "Летает";
+	
 	public static void init() {
 		CONFIG_DIR = DataBaseController.getConfigPathMain();
 		loadConfig();
@@ -125,6 +140,21 @@ public abstract class Config {
 			
 			SLEEP_ON = Utils.replaceColorCodes(y.getString("Sleep.on"));
 			SLEEP_OFF = Utils.replaceColorCodes(y.getString("Sleep.off"));
+			
+			YES = Utils.replaceColorCodes(y.getString("yes"));
+			NO = Utils.replaceColorCodes(y.getString("no"));
+			
+			PLAYER_STAT = Utils.replaceColorCodes(y.getString("stats.header"));
+			PLAYER_STAT_FOOTER = Utils.replaceColorCodes(y.getString("stats.footer"));
+			
+			WORLD = Utils.replaceColorCodes(y.getString("stats.world"));
+			GAME_MODE = Utils.replaceColorCodes(y.getString("stats.gamemode"));
+			HEALTH = Utils.replaceColorCodes(y.getString("stats.health"));
+			FOOD_LEVEL = Utils.replaceColorCodes(y.getString("stats.food_level"));
+			EXP = Utils.replaceColorCodes(y.getString("stats.exp"));
+			OPERATOR = Utils.replaceColorCodes(y.getString("stats.operator"));
+			FREEZED = Utils.replaceColorCodes(y.getString("stats.freezed"));
+			FLYING = Utils.replaceColorCodes(y.getString("stats.flying"));
 		}
 	}
 	
@@ -154,5 +184,20 @@ public abstract class Config {
 		
 		y.addDefault("Sleep.on", SLEEP_ON);
 		y.addDefault("Sleep.off", SLEEP_OFF);
+		
+		y.addDefault("yes", YES);
+		y.addDefault("no", NO);
+		
+		y.addDefault("stats.header", PLAYER_STAT);
+		y.addDefault("stats.footer", PLAYER_STAT_FOOTER);
+		
+		y.addDefault("stats.world", WORLD);
+		y.addDefault("stats.gamemode", GAME_MODE);
+		y.addDefault("stats.health", HEALTH);
+		y.addDefault("stats.food_level", FOOD_LEVEL);
+		y.addDefault("stats.exp", EXP);
+		y.addDefault("stats.operator", OPERATOR);
+		y.addDefault("stats.freezed", FREEZED);
+		y.addDefault("stats.flying", FLYING);
 	}
 }
