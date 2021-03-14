@@ -15,7 +15,7 @@ public class CTeleportWorld implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (player.isPermissionSet("scessentials.teleportworld")) {
+			if (player.isPermissionSet("scessentials.world.teleport")) {
 				if (args.length == 1) {
 					World world = SCCore.getInstance().getServer().getWorld(args[0]);
 					if (world != null) {

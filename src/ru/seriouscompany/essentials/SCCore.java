@@ -25,10 +25,12 @@ import ru.seriouscompany.essentials.commands.CReload;
 import ru.seriouscompany.essentials.commands.CSleepIgnore;
 import ru.seriouscompany.essentials.commands.CSuicide;
 import ru.seriouscompany.essentials.commands.CTeleportWorld;
+import ru.seriouscompany.essentials.commands.CWorld;
 import ru.seriouscompany.essentials.listeners.BlockListener;
 import ru.seriouscompany.essentials.listeners.EntityListener;
 import ru.seriouscompany.essentials.listeners.PlayerListener;
 import ru.seriouscompany.essentials.tabcompleters.TCPlayerArgument;
+import ru.seriouscompany.essentials.tabcompleters.TCWorld;
 import ru.seriouscompany.essentials.tabcompleters.TCWorldTeleport;
 
 public class SCCore extends JavaPlugin {
@@ -65,6 +67,8 @@ public class SCCore extends JavaPlugin {
 		getCommand("tpw").setExecutor(new CTeleportWorld());
 		getCommand("tpw").setTabCompleter(new TCWorldTeleport());
 		getCommand("suicide").setExecutor(new CSuicide());
+		getCommand("world").setExecutor(new CWorld());
+		getCommand("world").setTabCompleter(new TCWorld());
 		
 		checkTimedStop();
 		

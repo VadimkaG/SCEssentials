@@ -49,7 +49,7 @@ public class CPlayerInfo implements CommandExecutor {
 				sender.sendMessage(Config.FLYING+": "+Config.YES);
 			else
 				sender.sendMessage(Config.FLYING+": "+Config.NO);
-			if (Config.PLAYER_STAT.length() > 1)
+			if (Config.PLAYER_STAT_FOOTER.length() > 1)
 				sender.sendMessage(Config.PLAYER_STAT_FOOTER);
 		} else
 			sender.sendMessage(Config.PERMISSION_DENY);

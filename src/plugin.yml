@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 1.1
+version: 1.2
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
 commands:
@@ -36,6 +36,9 @@ commands:
   suicide:
     description: Самоуничтожиться
     usage: /suicide
+  world:
+    description: Команда миров
+    usage: /world <Команда>
 permissions:
   scessentials.*:
     description: Все преимущества плагина
@@ -100,7 +103,24 @@ permissions:
   scessentials.sleepignore:
     description: Дает преимущество игнорировать сон
     default: false
-  scessentials.teleportworld:
+  scessentials.world.*:
+    description: Дает преимущество работать с командами миров
+    default: false
+    children:
+      scessentials.world.teleport: true
+      scessentials.world.list: true
+      scessentials.world.unload: true
+      scessentials.world.load: true
+  scessentials.world.teleport:
     description: Дает преимущество телепортироваться между мирами
+    default: false
+  scessentials.world.list:
+    description: Дает преимущество смотреть список миров
+    default: false
+  scessentials.world.unload:
+    description: Возможность отгружать миры
+    default: false
+  scessentials.world.load:
+    description: Возможность подгружать миры
     default: false
 
