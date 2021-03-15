@@ -16,7 +16,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 
 import ru.seriouscompany.essentials.SCCore;
-import ru.seriouscompany.essentials.api.PlayerFreezeContainer;
+import ru.seriouscompany.essentials.api.Utils;
 import ru.seriouscompany.essentials.commands.CAFK;
 
 public class EntityListener implements Listener {
@@ -25,11 +25,11 @@ public class EntityListener implements Listener {
 	public void onDamage(EntityDamageEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (CAFK.isPlayerwaitingForAfk(player.getName())) {
-				CAFK.cancelWaiting(player.getName());
+			if (Utils.isPlayerAFKwait(player)) {
+				CAFK.cancelWaiting(player);
 				player.sendMessage("Вы получили урон, афк отменен.");
 			}
-			if (player != null && PlayerFreezeContainer.contains(player)) {
+			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setDamage(0);
 				e.setCancelled(true);
 			}
@@ -40,7 +40,7 @@ public class EntityListener implements Listener {
 	public void onAttack(EntityDamageByEntityEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (player != null && PlayerFreezeContainer.contains(player)) {
+			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setDamage(0);
 				e.setCancelled(true);
 			}
@@ -51,7 +51,7 @@ public class EntityListener implements Listener {
 	public void onTarget(EntityTargetEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (player != null && PlayerFreezeContainer.contains(player)) {
+			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setTarget(null);
 				e.setCancelled(true);
 			}
@@ -62,7 +62,7 @@ public class EntityListener implements Listener {
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (player != null && PlayerFreezeContainer.contains(player))
+			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}
 	}
@@ -71,7 +71,7 @@ public class EntityListener implements Listener {
 	public void onRegainHealth(EntityRegainHealthEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (player != null && PlayerFreezeContainer.contains(player)) {
+			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setAmount(0);
 				e.setCancelled(true);
 			}
@@ -82,7 +82,7 @@ public class EntityListener implements Listener {
 	public void onInteract(EntityInteractEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (player != null && PlayerFreezeContainer.contains(player))
+			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}
 	}
@@ -93,7 +93,7 @@ public class EntityListener implements Listener {
 		projectile.getShooter();
 		if (projectile instanceof Player) {
 			Player player = ((Player) projectile);
-			if (player != null && PlayerFreezeContainer.contains(player)) {
+			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setCancelled(true);
 			}
 		}
@@ -103,7 +103,7 @@ public class EntityListener implements Listener {
 	public void onShoot(EntityShootBowEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
-			if (player != null && PlayerFreezeContainer.contains(player))
+			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}
 	}

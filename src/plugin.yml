@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 1.3
+version: 1.3_dev
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
 commands:

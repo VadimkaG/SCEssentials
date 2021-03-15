@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import ru.seriouscompany.essentials.Config;
 import ru.seriouscompany.essentials.SCCore;
-import ru.seriouscompany.essentials.api.PlayerFreezeContainer;
+import ru.seriouscompany.essentials.api.Utils;
 
 public class CPlayerInfo implements CommandExecutor {
 
@@ -35,12 +35,12 @@ public class CPlayerInfo implements CommandExecutor {
 				sender.sendMessage(Config.OPERATOR+": "+Config.YES);
 			else
 				sender.sendMessage(Config.OPERATOR+": "+Config.NO);
-			if (PlayerFreezeContainer.contains(target))
+			if (Utils.isPlayerFreezed(target))
 				sender.sendMessage(Config.FREEZED+": "+Config.YES);
 			else
 				sender.sendMessage(Config.FREEZED+": "+Config.NO);
 			
-			if (CAFK.isPlayerAfk(target.getName()))
+			if (Utils.isPlayerAFK(target))
 				sender.sendMessage("AFK: "+Config.YES);
 			else
 				sender.sendMessage("AFK: "+Config.NO);

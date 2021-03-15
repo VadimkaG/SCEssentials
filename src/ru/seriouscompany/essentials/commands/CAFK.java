@@ -1,55 +1,46 @@
 package ru.seriouscompany.essentials.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import ru.seriouscompany.essentials.Config;
 import ru.seriouscompany.essentials.SCCore;
-import ru.seriouscompany.essentials.api.PlayerFreezeContainer;
+import ru.seriouscompany.essentials.api.Utils;
 
 public class CAFK implements CommandExecutor {
-	private static List<String> PLAYERS = new ArrayList<String>();
-	
-	private static HashMap<String,BukkitTask> WaitForAfk = new HashMap<String,BukkitTask>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (player.isPermissionSet("scessentials.afk")) {
-				if (WaitForAfk.containsKey(player.getName())) {
+				if (Utils.isPlayerAFKwait(player)) {
 					player.sendMessage(Config.AFK_ALREADY_WAIT);
 					return true;
 				}
-				if (PlayerFreezeContainer.contains(player)) {
-					PlayerFreezeContainer.removeStorager(player);
-					PLAYERS.remove(player.getName());
+				if ( Utils.isPlayerAFK(player) ) {
+					Utils.setPlayerAFK(player, false);
 					player.setSleepingIgnored(false);
 					SCCore.getInstance().getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
 				} else {
 					player.sendMessage(Config.AFK_WAIT.replace("%TIME%", String.valueOf(Config.WAIT_FOR_AFK/15)));
-					BukkitTask t = new BukkitRunnable() {
+					BukkitRunnable t = new BukkitRunnable() {
 						@Override
 						public void run() {
 							Player p = (Player) sender;
-							new PlayerFreezeContainer(p);
-							PLAYERS.add(p.getName());
-							WaitForAfk.remove(p.getName());
+							Utils.setPlayerAFK(player, true);
+							Utils.setPlayerAFKwait(player, false);
 							p.setSleepingIgnored(true);
 							Bukkit.broadcastMessage(Config.AFK_ON.replace("%PLAYER%", p.getName()));
 						}
-					}.runTaskLater(SCCore.getInstance(), Config.WAIT_FOR_AFK);
+					};
+					t.runTaskLater(SCCore.getInstance(), Config.WAIT_FOR_AFK);
 					
-					WaitForAfk.put(player.getName(),t);
+					Utils.setPlayerAFKwait(player, true);
 				}
 			} else
 				player.sendMessage(Config.PERMISSION_DENY);
@@ -61,19 +52,8 @@ public class CAFK implements CommandExecutor {
 		//return false;
 	}
 	
-	public static boolean isPlayerAfk(String player_name) {
-		return PLAYERS.contains(player_name);
-	}
-	
-	public static boolean isPlayerwaitingForAfk(String player_name) {
-		return WaitForAfk.containsKey(player_name);
-	}
-	
-	public static void cancelWaiting(String player_name) {
-		if (WaitForAfk.containsKey(player_name)) {
-			WaitForAfk.get(player_name).cancel();
-			WaitForAfk.remove(player_name);
-		}
+	public static void cancelWaiting(Player player) {
+		Utils.setPlayerAFKwait(player, false);
 	}
 
 }
