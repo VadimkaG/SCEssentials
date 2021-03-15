@@ -90,6 +90,10 @@ public class PlayerFlag implements MetadataValue {
 	public Object value() {
 		return value;
 	}
+	/**
+	 * Установить значение
+	 * @param value
+	 */
 	public void set(Object value) {
 		this.value = value;
 	}
@@ -102,9 +106,20 @@ public class PlayerFlag implements MetadataValue {
 	public static void setPlayerFlag(Player player, String flag, Object value) {
 		player.setMetadata(flag, new PlayerFlag(value));
 	}
+	/**
+	 * Имеет ли игрок флаг
+	 * @param player
+	 * @param flag
+	 * @return
+	 */
 	public static boolean hasPlayerFlag(Player player, String flag) {
 		return player.hasMetadata(flag);
 	}
+	/**
+	 * Удалить флаг у игрока
+	 * @param player
+	 * @param flag
+	 */
 	public static void removePlayerFlag(Player player, String flag) {
 		player.removeMetadata(flag, SCCore.getInstance());
 	}
@@ -122,6 +137,12 @@ public class PlayerFlag implements MetadataValue {
 		}
 		return null;
 	}
+	/**
+	 * Установлен ли флаг у игрока
+	 * @param player
+	 * @param flag
+	 * @return
+	 */
 	public static boolean isSetPlayerFlag(Player player, String flag) {
 		if (hasPlayerFlag(player,flag) && getPlayerFlag(player,flag) != null)
 			return true;
