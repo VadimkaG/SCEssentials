@@ -33,14 +33,13 @@ public class CAFK implements CommandExecutor {
 						public void run() {
 							Player p = (Player) sender;
 							Utils.setPlayerAFK(player, true);
-							Utils.setPlayerAFKwait(player, false);
+							Utils.cancelPlayerAFKwait(player);
 							p.setSleepingIgnored(true);
 							Bukkit.broadcastMessage(Config.AFK_ON.replace("%PLAYER%", p.getName()));
 						}
 					};
 					t.runTaskLater(SCCore.getInstance(), Config.WAIT_FOR_AFK);
-					
-					Utils.setPlayerAFKwait(player, true);
+					Utils.startPlayerAFKwait(player, t);
 				}
 			} else
 				player.sendMessage(Config.PERMISSION_DENY);
@@ -49,11 +48,6 @@ public class CAFK implements CommandExecutor {
 			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
 			return true;
 		}
-		//return false;
-	}
-	
-	public static void cancelWaiting(Player player) {
-		Utils.setPlayerAFKwait(player, false);
 	}
 
 }

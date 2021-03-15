@@ -17,16 +17,15 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 
 import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.Utils;
-import ru.seriouscompany.essentials.commands.CAFK;
 
 public class EntityListener implements Listener {
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onDamage(EntityDamageEvent e) {
-		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+		if (e.getEntityType() == EntityType.PLAYER && e.getEntity() instanceof Player) {
+			Player player = (Player)e.getEntity();
 			if (Utils.isPlayerAFKwait(player)) {
-				CAFK.cancelWaiting(player);
+				Utils.cancelPlayerAFKwait(player);
 				player.sendMessage("Вы получили урон, афк отменен.");
 			}
 			if (player != null && Utils.isPlayerFreezed(player)) {

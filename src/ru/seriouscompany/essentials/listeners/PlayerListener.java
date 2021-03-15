@@ -20,10 +20,14 @@ import ru.seriouscompany.essentials.api.Utils;
 
 public class PlayerListener implements Listener {
 	
-	/*@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-	public void onChat(AsyncPlayerChatEvent e) {
-		
-	}*/
+	@EventHandler
+	public void onExit(PlayerQuitEvent e) {
+		Player player = e.getPlayer();
+		if (Utils.isPlayerAFK(player))
+			Utils.setPlayerAFK(player, false);
+		if (Utils.isPlayerFreezed(player))
+			Utils.setPlayerFREEZE(player, false);
+	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onBlockPlace(BlockPlaceEvent e) {

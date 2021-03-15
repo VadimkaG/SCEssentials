@@ -2,6 +2,7 @@ package ru.seriouscompany.essentials.api;
 
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class Utils {
 	/**
@@ -43,19 +44,26 @@ public abstract class Utils {
 	 */
 	public static boolean isPlayerAFKwait(Player player) {
 		MetadataValue afkFlag;
-		return PlayerFlag.hasPlayerFlag(player, "AFK_WAIT") && (afkFlag = PlayerFlag.getPlayerFlag(player, "AFK_WAIT")) != null && afkFlag.asBoolean();
+		return PlayerFlag.hasPlayerFlag(player, "AFK_WAIT") && (afkFlag = PlayerFlag.getPlayerFlag(player, "AFK_WAIT")) != null && afkFlag.value() instanceof BukkitRunnable;
 	}
 	/**
-	 * Установить состояние ожидания АФК
+	 * Начать ожидание АФК для игрока
 	 * @param player - Игрок
-	 * @param value  - Состояние АФК
+	 * @param value  - Объект задачи на установку АФК
 	 */
-	public static void setPlayerAFKwait(Player player, boolean value) {
+	public static void startPlayerAFKwait(Player player, BukkitRunnable value) {
+		PlayerFlag.setPlayerFlag(player, "AFK_WAIT", value);
+	}
+	/**
+	 * Отменить ожидание АФК у игрока
+	 * @param player - ИГрок
+	 */
+	public static void cancelPlayerAFKwait(Player player) {
 		MetadataValue afkFlag;
-		if ((afkFlag = PlayerFlag.getPlayerFlag(player, "AFK_WAIT")) != null && afkFlag instanceof PlayerFlag) {
-			((PlayerFlag)afkFlag).set(value);
-		} else
-			PlayerFlag.setPlayerFlag(player, "AFK_WAIT", value);
+		if (PlayerFlag.hasPlayerFlag(player, "AFK_WAIT") && (afkFlag = PlayerFlag.getPlayerFlag(player, "AFK_WAIT")).value() instanceof BukkitRunnable) {
+			((BukkitRunnable)afkFlag.value()).cancel();
+			PlayerFlag.setPlayerFlag(player, "AFK_WAIT", false);
+		}
 	}
 	/**
 	 * Заморожен ли игрок
