@@ -1,44 +1,47 @@
 name: SCEssentials
-version: 1.2
+version: 1.3
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
 commands:
   afk:
     description: Афк
-    usage: /afk
+    usage: /<command>
   pinfo:
     description: Информаци о игроке
-    usage: /pinfo <Игрок>
+    usage: /<command> <Игрок>
   fly:
     description: Включить полет
-    usage: /fly [Игрок]
+    usage: /<command> [Игрок]
   scereload:
     description: Перезагрузка плагина
-    usage: /scereload
+    usage: /<command>
   heal:
     description: Установить здоровье
-    usage: /heal <Количество/Игрок> [кол здоровья]
+    usage: /<command> <Количество/Игрок> [кол здоровья]
   feed:
     description: Накормить игрока
-    usage: /feed [Игрок]
+    usage: /<command> [Игрок]
   oi:
     description: Открыть инвентарь игрока
-    usage: /oi <Игрок>
+    usage: /<command> <Игрок>
   oe:
     description: Открыть эндер сундук игрока
-    usage: /oe <Игрок>
+    usage: /<command> <Игрок>
   sleepignore:
     description: Игнорировать сон
-    usage: /sleepignore
+    usage: /<command>
   tpw:
     description: Переместиться в спаун указанного мира
-    usage: /tpw <Мир> [Игрок]
+    usage: /<command> <Мир> [Игрок]
   suicide:
     description: Самоуничтожиться
-    usage: /suicide
+    usage: /<command>
   world:
     description: Команда миров
-    usage: /world <Команда>
+    usage: /<command> <Команда>
+  lockbook:
+    description: Открыть книгу для записи
+    user: /<command>
 permissions:
   scessentials.*:
     description: Все преимущества плагина

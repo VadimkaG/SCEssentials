@@ -18,6 +18,7 @@ import ru.seriouscompany.essentials.commands.CAFK;
 import ru.seriouscompany.essentials.commands.CFeed;
 import ru.seriouscompany.essentials.commands.CFly;
 import ru.seriouscompany.essentials.commands.CHeal;
+import ru.seriouscompany.essentials.commands.CLockBook;
 import ru.seriouscompany.essentials.commands.COpenEnder;
 import ru.seriouscompany.essentials.commands.COpenInventory;
 import ru.seriouscompany.essentials.commands.CPlayerInfo;
@@ -69,6 +70,7 @@ public class SCCore extends JavaPlugin {
 		getCommand("suicide").setExecutor(new CSuicide());
 		getCommand("world").setExecutor(new CWorld());
 		getCommand("world").setTabCompleter(new TCWorld());
+		getCommand("lockbook").setExecutor(new CLockBook());
 		
 		checkTimedStop();
 		
