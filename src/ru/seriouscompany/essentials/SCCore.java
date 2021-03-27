@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.seriouscompany.essentials.commands.CAFK;
 import ru.seriouscompany.essentials.commands.CFeed;
 import ru.seriouscompany.essentials.commands.CFly;
+import ru.seriouscompany.essentials.commands.CFreeze;
 import ru.seriouscompany.essentials.commands.CHeal;
 import ru.seriouscompany.essentials.commands.CLockBook;
 import ru.seriouscompany.essentials.commands.COpenEnder;
@@ -33,10 +34,12 @@ import ru.seriouscompany.essentials.listeners.PlayerListener;
 import ru.seriouscompany.essentials.tabcompleters.TCPlayerArgument;
 import ru.seriouscompany.essentials.tabcompleters.TCWorld;
 import ru.seriouscompany.essentials.tabcompleters.TCWorldTeleport;
+import ru.seriouscompany.essentials.tasks.AFKTask;
 
 public class SCCore extends JavaPlugin {
 	
 	private static SCCore INSTANCE = null;
+	public AFKTask afkTask;
 	
 	private List<ScheduledFuture<?>> stopTask = new ArrayList<ScheduledFuture<?>>();
 	
@@ -71,14 +74,25 @@ public class SCCore extends JavaPlugin {
 		getCommand("world").setExecutor(new CWorld());
 		getCommand("world").setTabCompleter(new TCWorld());
 		getCommand("lockbook").setExecutor(new CLockBook());
+		getCommand("freeze").setExecutor(new CFreeze());
 		
 		checkTimedStop();
+		
+		if (Config.AFK_KICK > 0 || Config.AFK_AUTO > 0) {
+			afkTask = new AFKTask();
+			afkTask.runTaskTimer(this, 1000, 1000);
+		}
 		
 		getLogger().info("Плагин запущен");
 	}
 	
 	@Override
 	public void onDisable() {
+		if (afkTask != null)
+			afkTask.cancel();
+		for (ScheduledFuture<?> task: stopTask) {
+			task.cancel(true);
+		}
 		getLogger().info("Плагин остановлен");
 	}
 	

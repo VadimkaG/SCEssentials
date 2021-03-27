@@ -6,7 +6,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class Utils {
 	/**
-	 * Рескрасить текст
+	 * Раскрасить текст
 	 * Заменить & на \00A7
 	 * @param msg - Сообщение в котором нужно заменить символ
 	 * @return
@@ -30,12 +30,16 @@ public abstract class Utils {
 	 * @param value  - Состояние АФК
 	 */
 	public static void setPlayerAFK(Player player, boolean value) {
+		if (!isPlayerAFK(player) && Utils.isPlayerFreezed(player))
+			return;
 		MetadataValue afkFlag;
 		if ((afkFlag = PlayerFlag.getPlayerFlag(player, "AFK")) != null && afkFlag instanceof PlayerFlag) {
 			((PlayerFlag)afkFlag).set(value);
 		} else
 			PlayerFlag.setPlayerFlag(player, "AFK", value);
+		player.setSleepingIgnored(value);
 		Utils.setPlayerFREEZE(player, value);
+		PlayerFlag.setPlayerFlag(player, "lastActive", System.currentTimeMillis());
 	}
 	/**
 	 * Проверить ожидает ли игрок, чтобы стать АФК

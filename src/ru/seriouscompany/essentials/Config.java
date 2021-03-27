@@ -17,6 +17,9 @@ public abstract class Config {
 	public static String TIMEDSTOP_TIME = "04:00:00:000";
 	public static long TIMEDSTOP_DELY = 1;
 
+	public static long AFK_AUTO = 0;
+	public static long AFK_KICK = 0;
+
 	public static List<Integer> TIMEDSTOP_WARNS = new ArrayList<Integer>();
 
 	public static String PERMISSION_DENY = "Вам не разрешено использывать данное действие";
@@ -26,6 +29,8 @@ public abstract class Config {
 	public static String AFK_ON = "* %PLAYER% теперь афк";
 	public static String AFK_OFF = "* %PLAYER% больше не афк";
 	public static String AFK_WAIT = "Подождите %TIME% секунд";
+	public static String AFK_DENIED_WHEN_FREEZED = "Вы заморожены, вам нельзя использовать AFK";
+	public static String AFK_KICK_REASON = "Вы находилесь в афк дольше %TIME% минут(ы)";
 	
 	public static String FLY_DENYED = "Полет выключен сервером";
 	public static String FLY_ON = "Теперь вы можете летать";
@@ -38,6 +43,11 @@ public abstract class Config {
 	public static String HEAL_SUCCESS = "Вы вылечены";
 	public static String HEAL_SUCCESS_OTHER = "Вы вылечили игрока %PLAYER%";
 	public static String HEAL_ERR_INTEGER = "Вы должны указать число";
+	
+	public static String FREEZE_ON = "Вы заморозили игрока %PLAYER%";
+	public static String FREEZE_ON_TARGET = "Вас заморозил %PLAYER%";
+	public static String FREEZE_OFF = "Вы разморозили игрока %PLAYER%";
+	public static String FREEZE_OFF_TARGET = "Вас разморозил %PLAYER%";
 	
 	public static String SLEEP_ON = "Теперь вам нужно спать";
 	public static String SLEEP_OFF = "Теперь вам не нужно спать";
@@ -93,6 +103,9 @@ public abstract class Config {
 		} else {
 			WAIT_FOR_AFK = y.getLong("WaitForAFK");
 			
+			AFK_AUTO = y.getLong("Afk.Auto");
+			AFK_KICK = y.getLong("Afk.AutoKick");
+			
 			TIMEDSTOP_ENABLE = y.getBoolean("timedstop.enable");
 			TIMEDSTOP_FIXED_TIME = y.getBoolean("timedstop.fixed_time");
 			TIMEDSTOP_TIME = y.getString("timedstop.time");
@@ -105,6 +118,9 @@ public abstract class Config {
 		y.options().copyDefaults(true);
 		
 		y.addDefault("WaitForAFK", WAIT_FOR_AFK);
+		
+		y.addDefault("Afk.Auto", AFK_AUTO);
+		y.addDefault("Afk.AutoKick", AFK_KICK);
 		
 		y.addDefault("timedstop.enable", TIMEDSTOP_ENABLE);
 		y.addDefault("timedstop.fixed_time", TIMEDSTOP_FIXED_TIME);
@@ -134,6 +150,8 @@ public abstract class Config {
 			AFK_ON = Utils.replaceColorCodes(y.getString("Afk.On"));
 			AFK_OFF = Utils.replaceColorCodes(y.getString("Afk.Off"));
 			AFK_WAIT = Utils.replaceColorCodes(y.getString("Afk.Wait"));
+			AFK_DENIED_WHEN_FREEZED = Utils.replaceColorCodes(y.getString("Afk.DeniedWhenFreezed"));
+			AFK_KICK_REASON = Utils.replaceColorCodes(y.getString("Afk.KickReason"));
 			
 			FLY_DENYED = Utils.replaceColorCodes(y.getString("Fly.Deny"));
 			FLY_ON = Utils.replaceColorCodes(y.getString("Fly.OnSelf"));
@@ -193,6 +211,8 @@ public abstract class Config {
 		y.addDefault("Afk.On", AFK_ON);
 		y.addDefault("Afk.Off", AFK_OFF);
 		y.addDefault("Afk.Wait", AFK_WAIT);
+		y.addDefault("Afk.DeniedWhenFreezed", AFK_DENIED_WHEN_FREEZED);
+		y.addDefault("Afk.KickReason", AFK_KICK_REASON);
 		
 		y.addDefault("Player.NotFound", PLAYER_NOT_FOUND);
 		

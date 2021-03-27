@@ -22,11 +22,14 @@ public class CAFK implements CommandExecutor {
 					player.sendMessage(Config.AFK_ALREADY_WAIT);
 					return true;
 				}
-				if ( Utils.isPlayerAFK(player) ) {
+				if (Utils.isPlayerAFK(player)) {
 					Utils.setPlayerAFK(player, false);
-					player.setSleepingIgnored(false);
 					SCCore.getInstance().getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
 				} else {
+					if (Utils.isPlayerFreezed(player)) {
+						player.sendMessage(Config.AFK_DENIED_WHEN_FREEZED);
+						return true;
+					}
 					player.sendMessage(Config.AFK_WAIT.replace("%TIME%", String.valueOf(Config.WAIT_FOR_AFK/15)));
 					BukkitRunnable t = new BukkitRunnable() {
 						@Override
@@ -34,7 +37,6 @@ public class CAFK implements CommandExecutor {
 							Player p = (Player) sender;
 							Utils.setPlayerAFK(player, true);
 							Utils.cancelPlayerAFKwait(player);
-							p.setSleepingIgnored(true);
 							Bukkit.broadcastMessage(Config.AFK_ON.replace("%PLAYER%", p.getName()));
 						}
 					};
