@@ -16,8 +16,6 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import ru.seriouscompany.essentials.Config;
-import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.PlayerFlag;
 import ru.seriouscompany.essentials.api.Utils;
 
@@ -52,10 +50,6 @@ public class PlayerListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onMove(PlayerMoveEvent e) {
 		Player player = e.getPlayer();
-		if (Utils.isPlayerAFK(player)) {
-			Utils.setPlayerAFK(player, false);
-			SCCore.getInstance().getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
-		}
 		if (Utils.isPlayerFreezed(player))
 			e.setCancelled(true);
 		else

@@ -17,34 +17,35 @@ public class CAFK implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (player.isPermissionSet("scessentials.afk")) {
-				if (Utils.isPlayerAFKwait(player)) {
-					player.sendMessage(Config.AFK_ALREADY_WAIT);
+			if (Utils.isPlayerAFKwait(player)) {
+				player.sendMessage(Config.AFK_ALREADY_WAIT);
+				return true;
+			}
+			if (Utils.isPlayerAFK(player)) {
+				Utils.setPlayerAFK(player, false);
+				SCCore.getInstance().getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
+			} else {
+				if (!player.isPermissionSet("scessentials.afk")) {
+					player.sendMessage(Config.PERMISSION_DENY);
 					return true;
 				}
-				if (Utils.isPlayerAFK(player)) {
-					Utils.setPlayerAFK(player, false);
-					SCCore.getInstance().getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
-				} else {
-					if (Utils.isPlayerFreezed(player)) {
-						player.sendMessage(Config.AFK_DENIED_WHEN_FREEZED);
-						return true;
-					}
-					player.sendMessage(Config.AFK_WAIT.replace("%TIME%", String.valueOf(Config.WAIT_FOR_AFK/15)));
-					BukkitRunnable t = new BukkitRunnable() {
-						@Override
-						public void run() {
-							Player p = (Player) sender;
-							Utils.setPlayerAFK(player, true);
-							Utils.cancelPlayerAFKwait(player);
-							Bukkit.broadcastMessage(Config.AFK_ON.replace("%PLAYER%", p.getName()));
-						}
-					};
-					t.runTaskLater(SCCore.getInstance(), Config.WAIT_FOR_AFK);
-					Utils.startPlayerAFKwait(player, t);
+				if (Utils.isPlayerFreezed(player)) {
+					player.sendMessage(Config.AFK_DENIED_WHEN_FREEZED);
+					return true;
 				}
-			} else
-				player.sendMessage(Config.PERMISSION_DENY);
+				player.sendMessage(Config.AFK_WAIT.replace("%TIME%", String.valueOf(Config.WAIT_FOR_AFK/15)));
+				BukkitRunnable t = new BukkitRunnable() {
+					@Override
+					public void run() {
+						Player p = (Player) sender;
+						Utils.setPlayerAFK(player, true);
+						Utils.cancelPlayerAFKwait(player);
+						Bukkit.broadcastMessage(Config.AFK_ON.replace("%PLAYER%", p.getName()));
+					}
+				};
+				t.runTaskLater(SCCore.getInstance(), Config.WAIT_FOR_AFK);
+				Utils.startPlayerAFKwait(player, t);
+			}
 			return true;
 		} else {
 			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
