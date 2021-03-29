@@ -26,6 +26,7 @@ public class CPlayerInfo implements CommandExecutor {
 					+ target.getLocation().getBlockX() + ","
 					+ target.getLocation().getBlockY() + ", "
 					+ target.getLocation().getBlockZ() + ")");
+			sender.sendMessage("UUID: " + target.getUniqueId().toString());
 			sender.sendMessage("IP: " + target.getAddress().getAddress().getHostAddress());
 			sender.sendMessage(Config.GAME_MODE+": "+target.getGameMode().name());
 			sender.sendMessage(Config.HEALTH+": "+String.valueOf(target.getHealth()));
