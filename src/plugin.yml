@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 2
+version: 3
 api-version: 1.16
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -46,6 +46,9 @@ commands:
   freeze:
     description: Заморозить или разморозить игрока
     user: /<command> <Игрок>
+  accept:
+    description: Принять запрос
+    user: /<command>
 permissions:
   scessentials.*:
     description: Все преимущества плагина

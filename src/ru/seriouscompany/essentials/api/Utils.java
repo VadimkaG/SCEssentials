@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import ru.seriouscompany.essentials.SCCore;
+
 public abstract class Utils {
 	/**
 	 * Раскрасить текст
@@ -89,5 +91,29 @@ public abstract class Utils {
 			((PlayerFlag)afkFlag).set(value);
 		} else
 			PlayerFlag.setPlayerFlag(player, "FREEZED", value);
+	}
+	/**
+	 * Запросить разрешение на действие у игрока
+	 * @param player - Игрок, у которого будет запрошено разрешение на действие
+	 * @param action - Действие
+	 */
+	public static void requset(Player player, Runnable action) {
+		requset(player, action, 3000);
+	}
+	/**
+	 * Запросить разрешение на действие у игрока
+	 * @param player  - Игрок, у которого будет запрошено разрешение на действие
+	 * @param action  - Действие
+	 * @param delay   - Время, после которого запрос будет отменен
+	 */
+	public static void requset(Player player, Runnable action, long delay) {
+		PlayerFlag.setPlayerFlag(player, "PLAYER_REQUEST", action);
+		BukkitRunnable task = new BukkitRunnable() {
+			@Override
+			public void run() {
+				PlayerFlag.removePlayerFlag(player, "PLAYER_REQUEST");
+			}
+		};
+		task.runTaskLater(SCCore.getInstance(), delay);
 	}
 }

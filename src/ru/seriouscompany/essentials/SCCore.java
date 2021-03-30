@@ -24,6 +24,7 @@ import ru.seriouscompany.essentials.commands.COpenEnder;
 import ru.seriouscompany.essentials.commands.COpenInventory;
 import ru.seriouscompany.essentials.commands.CPlayerInfo;
 import ru.seriouscompany.essentials.commands.CReload;
+import ru.seriouscompany.essentials.commands.CRequestAccept;
 import ru.seriouscompany.essentials.commands.CSleepIgnore;
 import ru.seriouscompany.essentials.commands.CSuicide;
 import ru.seriouscompany.essentials.commands.CTeleportWorld;
@@ -75,6 +76,7 @@ public class SCCore extends JavaPlugin {
 		getCommand("world").setTabCompleter(new TCWorld());
 		getCommand("lockbook").setExecutor(new CLockBook());
 		getCommand("freeze").setExecutor(new CFreeze());
+		getCommand("accept").setExecutor(new CRequestAccept());
 		
 		checkTimedStop();
 		
