@@ -44,6 +44,9 @@ public abstract class Config {
 	public static String HEAL_SUCCESS_OTHER = "Вы вылечили игрока %PLAYER%";
 	public static String HEAL_ERR_INTEGER = "Вы должны указать число";
 	
+	public static String SPECTATOR_MODE_ON = "Вы включили режим зрителя";
+	public static String SPECTATOR_MODE_OFF = "Вы выключили режим зрителя";
+	
 	public static String FREEZE_ON = "Вы заморозили игрока %PLAYER%";
 	public static String FREEZE_ON_TARGET = "Вас заморозил %PLAYER%";
 	public static String FREEZE_OFF = "Вы разморозили игрока %PLAYER%";

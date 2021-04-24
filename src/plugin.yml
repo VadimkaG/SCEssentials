@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 3
+version: 4
 api-version: 1.16
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -49,6 +49,9 @@ commands:
   accept:
     description: Принять запрос
     user: /<command>
+  specmode:
+    description: Режим зрителя
+    user: /<command>
 permissions:
   scessentials.*:
     description: Все преимущества плагина
@@ -66,6 +69,7 @@ permissions:
       scessentials.teleportworld: true
       scessentials.suicide: true
       scessentials.freeze: true
+      scessentials.spectator: true
   scessentials.suicide:
     description: Дает преимущества суицида
     default: true
@@ -116,6 +120,9 @@ permissions:
     default: false
   scessentials.freeze:
     description: Возможность заморозить игрока
+    default: false
+  scessentials.spectator:
+    description: Возможность включить режим зрителя
     default: false
   scessentials.world.*:
     description: Дает преимущество работать с командами миров
