@@ -3,14 +3,21 @@ package ru.seriouscompany.essentials;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import ru.seriouscompany.essentials.api.Utils;
 
 public abstract class Config {
 	public static long WAIT_FOR_AFK = 75;
+	public static long COMBAT_TIME = 5;
 
 	public static boolean TIMEDSTOP_ENABLE = false;
 	public static boolean TIMEDSTOP_FIXED_TIME = true;
@@ -19,8 +26,16 @@ public abstract class Config {
 
 	public static long AFK_AUTO = 0;
 	public static long AFK_KICK = 0;
+	public static boolean AFK_TEAM = false;
+	
+	public static boolean KILL_COMBAT_LEAVER = false;
+	public static boolean COMBAT_MESSAGES = false;
+	
+	public static boolean WORLD_AUTO_LOAD = false;
 
 	public static List<Integer> TIMEDSTOP_WARNS = new ArrayList<Integer>();
+	public static Map<Player, BukkitTask> PLAYERS_IN_COMBAT = new HashMap<>();
+	public static List<String> WORLDS = new ArrayList<>();
 
 	public static String PERMISSION_DENY = "Вам не разрешено использывать данное действие";
 	public static String COMMAND_FOR_PLAYERS = "Эта команда предназначена для игроков";
@@ -31,6 +46,7 @@ public abstract class Config {
 	public static String AFK_WAIT = "Подождите %TIME% секунд";
 	public static String AFK_DENIED_WHEN_FREEZED = "Вы заморожены, вам нельзя использовать AFK";
 	public static String AFK_KICK_REASON = "Вы находилесь в афк дольше %TIME% минут(ы)";
+	public static String AFK_PREFIX = ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "AFK" + ChatColor.DARK_AQUA + "] " + ChatColor.DARK_GRAY;
 	
 	public static String FLY_DENYED = "Полет выключен сервером";
 	public static String FLY_ON = "Теперь вы можете летать";
@@ -51,6 +67,9 @@ public abstract class Config {
 	
 	public static String SLEEP_ON = "Теперь вам нужно спать";
 	public static String SLEEP_OFF = "Теперь вам не нужно спать";
+	
+	public static String IN_COMBAT = ChatColor.RED + "" + ChatColor.BOLD + "Вы в бою!";
+	public static String OUT_COMBAT = ChatColor.RED + "" + ChatColor.BOLD + "Вы больше не в бою!";
 
 	public static String WORLD_LIST = "========== Загруженные миры ==========";
 	public static String WORLD_LIST_FOOTER = "==============================";
@@ -105,12 +124,20 @@ public abstract class Config {
 			
 			AFK_AUTO = y.getLong("Afk.Auto");
 			AFK_KICK = y.getLong("Afk.AutoKick");
+			AFK_TEAM = y.getBoolean("Afk.Team");
 			
-			TIMEDSTOP_ENABLE = y.getBoolean("timedstop.enable");
-			TIMEDSTOP_FIXED_TIME = y.getBoolean("timedstop.fixed_time");
-			TIMEDSTOP_TIME = y.getString("timedstop.time");
-			TIMEDSTOP_DELY = y.getLong("timedstop.delyhour");
-			TIMEDSTOP_WARNS = (List<Integer>) y.getList("timedstop.warnings");
+			KILL_COMBAT_LEAVER = y.getBoolean("Combat.KillCombatLeavers");
+			COMBAT_MESSAGES = y.getBoolean("Combat.CombatMessages");
+			COMBAT_TIME = y.getLong("Combat.CombatTime");
+			
+			TIMEDSTOP_ENABLE = y.getBoolean("Timedstop.Enable");
+			TIMEDSTOP_FIXED_TIME = y.getBoolean("Timedstop.FixedTime");
+			TIMEDSTOP_TIME = y.getString("Timedstop.Time");
+			TIMEDSTOP_DELY = y.getLong("Timedstop.Delyhour");
+			TIMEDSTOP_WARNS = (List<Integer>) y.getList("Timedstop.Warnings");
+			
+			WORLD_AUTO_LOAD = y.getBoolean("Worlds.AutoLoad");
+			WORLDS = (List<String>) y.getList("Worlds.Worlds");
 		}
 	}
 	
@@ -121,12 +148,20 @@ public abstract class Config {
 		
 		y.addDefault("Afk.Auto", AFK_AUTO);
 		y.addDefault("Afk.AutoKick", AFK_KICK);
+		y.addDefault("Afk.Team", AFK_TEAM);
 		
-		y.addDefault("timedstop.enable", TIMEDSTOP_ENABLE);
-		y.addDefault("timedstop.fixed_time", TIMEDSTOP_FIXED_TIME);
-		y.addDefault("timedstop.time", TIMEDSTOP_TIME);
-		y.addDefault("timedstop.delyhour", TIMEDSTOP_DELY);
-		y.addDefault("timedstop.warnings", TIMEDSTOP_WARNS);
+		y.addDefault("Combat.KillCombatLeavers", KILL_COMBAT_LEAVER);
+		y.addDefault("Combat.CombatMessages", COMBAT_MESSAGES);
+		y.addDefault("Combat.CombatTime", COMBAT_TIME);
+		
+		y.addDefault("Timedstop.Enable", TIMEDSTOP_ENABLE);
+		y.addDefault("Timedstop.FixedTime", TIMEDSTOP_FIXED_TIME);
+		y.addDefault("Timedstop.Time", TIMEDSTOP_TIME);
+		y.addDefault("Timedstop.Delyhour", TIMEDSTOP_DELY);
+		y.addDefault("Timedstop.Warnings", TIMEDSTOP_WARNS);
+		
+		y.addDefault("Worlds.AutoLoad", WORLD_AUTO_LOAD);
+		y.addDefault("Worlds.Worlds", WORLDS);
 	}
 	
 	public static void loadMessages() {
@@ -152,6 +187,10 @@ public abstract class Config {
 			AFK_WAIT = Utils.replaceColorCodes(y.getString("Afk.Wait"));
 			AFK_DENIED_WHEN_FREEZED = Utils.replaceColorCodes(y.getString("Afk.DeniedWhenFreezed"));
 			AFK_KICK_REASON = Utils.replaceColorCodes(y.getString("Afk.KickReason"));
+			AFK_PREFIX = Utils.replaceColorCodes(y.getString("Afk.Prefix"));
+			
+			IN_COMBAT = Utils.replaceColorCodes(y.getString("Combat.inCombat"));
+			OUT_COMBAT = Utils.replaceColorCodes(y.getString("Combat.outCombat"));
 			
 			FLY_DENYED = Utils.replaceColorCodes(y.getString("Fly.Deny"));
 			FLY_ON = Utils.replaceColorCodes(y.getString("Fly.OnSelf"));
@@ -213,6 +252,10 @@ public abstract class Config {
 		y.addDefault("Afk.Wait", AFK_WAIT);
 		y.addDefault("Afk.DeniedWhenFreezed", AFK_DENIED_WHEN_FREEZED);
 		y.addDefault("Afk.KickReason", AFK_KICK_REASON);
+		y.addDefault("Afk.Prefix", AFK_PREFIX);
+		
+		y.addDefault("Combat.inCombat", IN_COMBAT);
+		y.addDefault("Combat.outCombat", OUT_COMBAT);
 		
 		y.addDefault("Player.NotFound", PLAYER_NOT_FOUND);
 		
