@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -35,7 +34,7 @@ public abstract class Config {
 
 	public static List<Integer> TIMEDSTOP_WARNS = new ArrayList<Integer>();
 	public static Map<Player, BukkitTask> PLAYERS_IN_COMBAT = new HashMap<>();
-	public static List<String> WORLDS = new ArrayList<>();
+	//public static List<String> WORLDS = new ArrayList<>();
 
 	public static String PERMISSION_DENY = "Вам не разрешено использывать данное действие";
 	public static String COMMAND_FOR_PLAYERS = "Эта команда предназначена для игроков";
@@ -137,7 +136,7 @@ public abstract class Config {
 			TIMEDSTOP_WARNS = (List<Integer>) y.getList("Timedstop.Warnings");
 			
 			WORLD_AUTO_LOAD = y.getBoolean("Worlds.AutoLoad");
-			WORLDS = (List<String>) y.getList("Worlds.Worlds");
+			//WORLDS = (List<String>) y.getList("Worlds.Worlds");
 		}
 	}
 	
@@ -161,7 +160,7 @@ public abstract class Config {
 		y.addDefault("Timedstop.Warnings", TIMEDSTOP_WARNS);
 		
 		y.addDefault("Worlds.AutoLoad", WORLD_AUTO_LOAD);
-		y.addDefault("Worlds.Worlds", WORLDS);
+		//y.addDefault("Worlds.Worlds", WORLDS);
 	}
 	
 	public static void loadMessages() {
