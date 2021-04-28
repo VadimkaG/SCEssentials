@@ -1,9 +1,15 @@
 package ru.seriouscompany.essentials.api;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
+import ru.seriouscompany.essentials.Config;
 import ru.seriouscompany.essentials.SCCore;
 
 public abstract class Utils {
@@ -16,6 +22,67 @@ public abstract class Utils {
 	public static String replaceColorCodes(String msg) {
 		if (msg == null) return "";
 		return msg.replaceAll("&([a-z0-9])", "\u00A7$1");
+	}
+	/**
+	 * Создаст команду для людей в АФК
+	 */
+	protected static String afkName = "AFK";
+	public static void createAfkTeam() {
+		if (Config.AFK_TEAM) {
+			ScoreboardManager sm = Bukkit.getScoreboardManager();
+	        Scoreboard curScoreboard = sm.getNewScoreboard();
+	        Team afkTeam = curScoreboard.getTeam(afkName);
+	        if (afkTeam == null) {
+	        	afkTeam = curScoreboard.registerNewTeam(afkName);
+	        }
+	        afkTeam.setPrefix(Config.AFK_PREFIX);
+		}
+	}
+	/**
+	 * Добавляет игока в команду АФК
+	 * @param player - игрок
+	 */
+	public static void addPlayerToAfkTeam(Player player) {
+		if (Config.AFK_TEAM) {
+			for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
+				Scoreboard curScoreboard = eachPlayer.getScoreboard();
+				Team team = curScoreboard.getTeam(afkName);
+				if (team == null) {
+					return;
+				}
+				eachPlayer.hidePlayer(SCCore.getInstance(), player);
+				eachPlayer.showPlayer(SCCore.getInstance(), player);
+	            
+				String pref = team.getPrefix();
+		        team.setPrefix(pref);
+				
+	        	team.addEntry(player.getDisplayName());
+	        	eachPlayer.setScoreboard(curScoreboard);
+	        }
+			if (player.getDisplayName().length() < 15)
+				player.setDisplayName(ChatColor.GRAY + player.getDisplayName());
+		}
+	}
+	/**
+	 * Удаляет игока с команды АФК
+	 * @param player - игрок
+	 */
+	public static void removePlayerFromAfkTeam(Player player) {
+		if (Config.AFK_TEAM) {
+			for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
+				Scoreboard curScoreboard = eachPlayer.getScoreboard();
+				Team team = curScoreboard.getTeam(afkName);
+				if (team == null) {
+					return;
+				}
+				eachPlayer.hidePlayer(SCCore.getInstance(), player);
+				eachPlayer.showPlayer(SCCore.getInstance(), player);
+	            		
+	            team.removeEntry(player.getDisplayName());
+	            eachPlayer.setScoreboard(curScoreboard);
+			}
+			player.setDisplayName(player.getDisplayName().replace(ChatColor.GRAY.toString(), ""));
+		}
 	}
 	/**
 	 * Проверить находится ли игрок в АФК
@@ -37,8 +104,11 @@ public abstract class Utils {
 		MetadataValue afkFlag;
 		if ((afkFlag = PlayerFlag.getPlayerFlag(player, "AFK")) != null && afkFlag instanceof PlayerFlag) {
 			((PlayerFlag)afkFlag).set(value);
-		} else
+			Utils.removePlayerFromAfkTeam(player);
+		} else {
 			PlayerFlag.setPlayerFlag(player, "AFK", value);
+			Utils.addPlayerToAfkTeam(player);
+		}
 		player.setSleepingIgnored(value);
 		Utils.setPlayerFREEZE(player, value);
 		PlayerFlag.setPlayerFlag(player, "lastActive", System.currentTimeMillis());

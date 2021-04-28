@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 4
+version: 4.1
 api-version: 1.16
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -70,12 +70,16 @@ permissions:
       scessentials.suicide: true
       scessentials.freeze: true
       scessentials.spectator: true
+      scessentials.world.*: true
   scessentials.suicide:
     description: Дает преимущества суицида
     default: true
   scessentials.afk:
     description: Дает возможность отлучиться от компьютера
     default: true
+  scessentials.combat:
+    description: Дает возможность выходить из игры во время боя
+    default: false
   scessentials.feed:
     description: Дает преимущество восстановить голод
     default: false
