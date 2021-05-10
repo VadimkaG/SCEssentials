@@ -19,6 +19,10 @@ public class CFreeze implements CommandExecutor {
 				player.sendMessage(Config.PERMISSION_DENY);
 				return true;
 			}
+			if (Utils.isPlayerFreezed(player)) {
+				sender.sendMessage(Config.YOU_FREEZED);
+				return true;
+			}
 		}
 		if (args.length == 1) {
 			Player target = SCCore.getInstance().getServer().getPlayer(args[0]);
@@ -26,17 +30,22 @@ public class CFreeze implements CommandExecutor {
 				sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
 				return true;
 			}
+			if (target.equals(sender)) {
+				sender.sendMessage(Config.FREEZE_SELF);
+				return true;
+			}
 			if (Utils.isPlayerFreezed(target)) {
 				Utils.setPlayerFREEZE(target, false);
 				if (sender != target)
 					sender.sendMessage(Config.FREEZE_OFF.replace("%PLAYER%", target.getName()));
-				sender.sendMessage(Config.FREEZE_OFF_TARGET.replace("%PLAYER%", sender.getName()));
+				target.sendMessage(Config.FREEZE_OFF_TARGET.replace("%PLAYER%", sender.getName()));
 			} else {
 				Utils.setPlayerFREEZE(target, true);
 				if (sender != target)
 					sender.sendMessage(Config.FREEZE_ON.replace("%PLAYER%", target.getName()));
-				sender.sendMessage(Config.FREEZE_ON_TARGET.replace("%PLAYER%", sender.getName()));
+				target.sendMessage(Config.FREEZE_ON_TARGET.replace("%PLAYER%", sender.getName()));
 			}
+			return true;
 		}
 		return false;
 	}

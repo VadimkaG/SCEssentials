@@ -3,14 +3,10 @@ package ru.seriouscompany.essentials;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import ru.seriouscompany.essentials.api.Utils;
 
@@ -26,15 +22,13 @@ public abstract class Config {
 	public static long AFK_AUTO = 0;
 	public static long AFK_KICK = 0;
 	public static boolean AFK_TEAM = false;
-	
+
 	public static boolean KILL_COMBAT_LEAVER = false;
 	public static boolean COMBAT_MESSAGES = false;
-	
+
 	public static boolean WORLD_AUTO_LOAD = false;
 
 	public static List<Integer> TIMEDSTOP_WARNS = new ArrayList<Integer>();
-	public static Map<Player, BukkitTask> PLAYERS_IN_COMBAT = new HashMap<>();
-	//public static List<String> WORLDS = new ArrayList<>();
 
 	public static String PERMISSION_DENY = "Вам не разрешено использывать данное действие";
 	public static String COMMAND_FOR_PLAYERS = "Эта команда предназначена для игроков";
@@ -45,7 +39,7 @@ public abstract class Config {
 	public static String AFK_WAIT = "Подождите %TIME% секунд";
 	public static String AFK_DENIED_WHEN_FREEZED = "Вы заморожены, вам нельзя использовать AFK";
 	public static String AFK_KICK_REASON = "Вы находилесь в афк дольше %TIME% минут(ы)";
-	public static String AFK_PREFIX = ChatColor.DARK_AQUA + "[" + ChatColor.AQUA + "AFK" + ChatColor.DARK_AQUA + "] " + ChatColor.DARK_GRAY;
+	public static String AFK_PREFIX = "[AFK] ";
 	
 	public static String FLY_DENYED = "Полет выключен сервером";
 	public static String FLY_ON = "Теперь вы можете летать";
@@ -62,16 +56,25 @@ public abstract class Config {
 	public static String SPECTATOR_MODE_ON = "Вы включили режим зрителя";
 	public static String SPECTATOR_MODE_OFF = "Вы выключили режим зрителя";
 	
+	public static String UNDRESSED = "Игрок успешно раздет.";
+	public static String UNDRESSED_FULL = "Инвентарь игрока забит. Некоторые вещи не сняты.";
+	public static String UNDRESSED_TARGET = "Вас раздел %PLAYER%";
+
+	public static String PASSIVE_MODE_ON = "Вы включили пассивный режим.";
+	public static String PASSIVE_MODE_OFF = "Вы выключили пассивный режим.";
+	
 	public static String FREEZE_ON = "Вы заморозили игрока %PLAYER%";
 	public static String FREEZE_ON_TARGET = "Вас заморозил %PLAYER%";
 	public static String FREEZE_OFF = "Вы разморозили игрока %PLAYER%";
 	public static String FREEZE_OFF_TARGET = "Вас разморозил %PLAYER%";
+	public static String FREEZE_SELF = "Нельзя морозить себя";
+	public static String YOU_FREEZED = "Вы заморожены и не можете пользоваться командой заморозки";
 	
 	public static String SLEEP_ON = "Теперь вам нужно спать";
 	public static String SLEEP_OFF = "Теперь вам не нужно спать";
 	
-	public static String IN_COMBAT = ChatColor.RED + "" + ChatColor.BOLD + "Вы в бою!";
-	public static String OUT_COMBAT = ChatColor.RED + "" + ChatColor.BOLD + "Вы больше не в бою!";
+	public static String COMBAT_IN_YOU = "Вы в бою!";
+	public static String COMBAT_OUT_YOU = "Вы больше не в бою!";
 
 	public static String WORLD_LIST = "========== Загруженные миры ==========";
 	public static String WORLD_LIST_FOOTER = "==============================";
@@ -83,6 +86,7 @@ public abstract class Config {
 	public static String WORLD_UNLOAD_COMPLETE = "Отгрузка мира '%WORLD%' завершена.";
 	public static String WORLD_UNLOAD_ERROR = "Отгрузка мира '%WORLD%' не удалась.";
 
+	public static String PLAYER_BED_NOT_FOUND = "Кровать игрока %PLAYER% не найдена";
 	public static String PLAYER_NOT_FOUND = "Игрок с ником %PLAYER% не найден";
 
 	public static String WORLD_NOT_FOUND = "Мир %WORLD% не существует";
@@ -106,199 +110,212 @@ public abstract class Config {
 	public static String OPERATOR = "Оператор";
 	public static String FREEZED = "Заморожен";
 	public static String FLYING = "Летает";
+	public static String COMBAT_IN = "В бою";
+	public static String PASSIVEMODE_STAT = "Пассивный";
 
-	public static void init() {
-		loadConfig();
-		loadMessages();
-	}
-
-	@SuppressWarnings("unchecked")
 	public static void loadConfig() {
 		File f = new File("plugins/SCEssentials/config.yml");
 		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
-		setDefaultConfig(y);
+		boolean fileNotExists = !f.exists();
+		if (fileNotExists)
+			y.options().copyDefaults(true);
+
+		WAIT_FOR_AFK = procLong(y, fileNotExists, "WaitForAFK", WAIT_FOR_AFK);
+		
+		AFK_AUTO = procLong(y, fileNotExists, "Afk.Auto", AFK_AUTO);
+		AFK_KICK = procLong(y, fileNotExists, "Afk.AutoKick", AFK_KICK);
+		AFK_TEAM = procBoolean(y, fileNotExists, "Afk.Team", AFK_TEAM);
+		
+		KILL_COMBAT_LEAVER = procBoolean(y, fileNotExists, "Combat.KillCombatLeavers", KILL_COMBAT_LEAVER);
+		COMBAT_MESSAGES = procBoolean(y, fileNotExists, "Combat.CombatMessages", COMBAT_MESSAGES);
+		COMBAT_TIME = procLong(y, fileNotExists, "Combat.CombatTime", COMBAT_TIME);
+		
+		TIMEDSTOP_ENABLE = procBoolean(y, fileNotExists, "Timedstop.Enable", TIMEDSTOP_ENABLE);
+		TIMEDSTOP_FIXED_TIME = procBoolean(y, fileNotExists, "Timedstop.FixedTime", TIMEDSTOP_FIXED_TIME);
+		TIMEDSTOP_TIME = procString(y, fileNotExists, "Timedstop.Time", TIMEDSTOP_TIME,false);
+		TIMEDSTOP_DELY = procLong(y, fileNotExists, "Timedstop.Delyhour", TIMEDSTOP_DELY);
+		TIMEDSTOP_WARNS = procListInteger(y, fileNotExists, "Timedstop.Warnings", TIMEDSTOP_WARNS);
+		
+		WORLD_AUTO_LOAD = procBoolean(y, fileNotExists, "Worlds.AutoLoad", WORLD_AUTO_LOAD);
+		
 		if (!f.exists()) {
 			try {y.save(f);} catch (IOException e) {
-				SCCore.getInstance().getLogger().info("Ошибка сохранения config.yml.");
+				Bukkit.getLogger().info("Ошибка сохранения config.yml.");
 			}
-		} else {
-			WAIT_FOR_AFK = y.getLong("WaitForAFK");
-			
-			AFK_AUTO = y.getLong("Afk.Auto");
-			AFK_KICK = y.getLong("Afk.AutoKick");
-			AFK_TEAM = y.getBoolean("Afk.Team");
-			
-			KILL_COMBAT_LEAVER = y.getBoolean("Combat.KillCombatLeavers");
-			COMBAT_MESSAGES = y.getBoolean("Combat.CombatMessages");
-			COMBAT_TIME = y.getLong("Combat.CombatTime");
-			
-			TIMEDSTOP_ENABLE = y.getBoolean("Timedstop.Enable");
-			TIMEDSTOP_FIXED_TIME = y.getBoolean("Timedstop.FixedTime");
-			TIMEDSTOP_TIME = y.getString("Timedstop.Time");
-			TIMEDSTOP_DELY = y.getLong("Timedstop.Delyhour");
-			TIMEDSTOP_WARNS = (List<Integer>) y.getList("Timedstop.Warnings");
-			
-			WORLD_AUTO_LOAD = y.getBoolean("Worlds.AutoLoad");
-			//WORLDS = (List<String>) y.getList("Worlds.Worlds");
 		}
-	}
-	
-	public static void setDefaultConfig(YamlConfiguration y) {
-		y.options().copyDefaults(true);
-		
-		y.addDefault("WaitForAFK", WAIT_FOR_AFK);
-		
-		y.addDefault("Afk.Auto", AFK_AUTO);
-		y.addDefault("Afk.AutoKick", AFK_KICK);
-		y.addDefault("Afk.Team", AFK_TEAM);
-		
-		y.addDefault("Combat.KillCombatLeavers", KILL_COMBAT_LEAVER);
-		y.addDefault("Combat.CombatMessages", COMBAT_MESSAGES);
-		y.addDefault("Combat.CombatTime", COMBAT_TIME);
-		
-		y.addDefault("Timedstop.Enable", TIMEDSTOP_ENABLE);
-		y.addDefault("Timedstop.FixedTime", TIMEDSTOP_FIXED_TIME);
-		y.addDefault("Timedstop.Time", TIMEDSTOP_TIME);
-		y.addDefault("Timedstop.Delyhour", TIMEDSTOP_DELY);
-		y.addDefault("Timedstop.Warnings", TIMEDSTOP_WARNS);
-		
-		y.addDefault("Worlds.AutoLoad", WORLD_AUTO_LOAD);
-		//y.addDefault("Worlds.Worlds", WORLDS);
 	}
 	
 	public static void loadMessages() {
 		File f = new File("plugins/SCEssentials/messages.yml");
 		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
-		setDeafultMessages(y);
-		if (!f.exists())  {
+		boolean fileNotExists = !f.exists();
+		if (fileNotExists)
+			y.options().copyDefaults(true);
+		
+		PERMISSION_DENY = procString(y, fileNotExists, "PermissionDeny", PERMISSION_DENY);
+		COMMAND_FOR_PLAYERS = procString(y, fileNotExists, "CommandOnlyForPlayers", COMMAND_FOR_PLAYERS);
+		
+		SERVER_OFF_WHITH = procString(y, fileNotExists, "ServerOff.With", SERVER_OFF_WHITH);
+		SERVER_OFF_SECONDS = procString(y, fileNotExists, "ServerOff.Seconds", SERVER_OFF_SECONDS);
+		SERVER_OFF_MINUTES = procString(y, fileNotExists, "ServerOff.Minutes", SERVER_OFF_MINUTES);
+		SERVER_OFF_HOURS = procString(y, fileNotExists, "ServerOff.Hours", SERVER_OFF_HOURS);
+		
+		AFK_ALREADY_WAIT = procString(y, fileNotExists, "Afk.AlreadyWait", AFK_ALREADY_WAIT);
+		AFK_ON = procString(y, fileNotExists, "Afk.On", AFK_ON);
+		AFK_OFF = procString(y, fileNotExists, "Afk.Off", AFK_OFF);
+		AFK_WAIT = procString(y, fileNotExists, "Afk.Wait", AFK_WAIT);
+		AFK_DENIED_WHEN_FREEZED = procString(y, fileNotExists, "Afk.DeniedWhenFreezed", AFK_DENIED_WHEN_FREEZED);
+		AFK_KICK_REASON = procString(y, fileNotExists, "Afk.KickReason", AFK_KICK_REASON);
+		AFK_PREFIX = procString(y, fileNotExists, "Afk.Prefix", AFK_PREFIX);
+		
+		FLY_DENYED = procString(y, fileNotExists, "Fly.Deny", FLY_DENYED);
+		FLY_ON = procString(y, fileNotExists, "Fly.OnSelf", FLY_ON);
+		FLY_OFF = procString(y, fileNotExists, "Fly.OffSelf", FLY_OFF);
+		FLY_ON_OTHER = procString(y, fileNotExists, "Fly.OnOther", FLY_ON_OTHER);
+		FLY_OFF_OTHER = procString(y, fileNotExists, "Fly.OffOther", FLY_OFF_OTHER);
+		FLY_DENY_OTHER = procString(y, fileNotExists, "Fly.DenyOther", FLY_DENY_OTHER);
+		
+		HEAL_DENYED = procString(y, fileNotExists, "Heal.Denyed", HEAL_DENYED);
+		HEAL_SUCCESS = procString(y, fileNotExists, "Heal.Success", HEAL_SUCCESS);
+		HEAL_SUCCESS_OTHER = procString(y, fileNotExists, "Heal.SuccessOther", HEAL_SUCCESS_OTHER);
+		HEAL_ERR_INTEGER = procString(y, fileNotExists, "Heal.ErrInteger", HEAL_ERR_INTEGER);
+		
+		SPECTATOR_MODE_ON = procString(y, fileNotExists, "SpectatorMode.on", SPECTATOR_MODE_ON);
+		SPECTATOR_MODE_OFF = procString(y, fileNotExists, "SpectatorMode.off", SPECTATOR_MODE_OFF);
+		
+		PASSIVE_MODE_ON = procString(y, fileNotExists, "PassiveMod.on", PASSIVE_MODE_ON);
+		PASSIVE_MODE_OFF = procString(y, fileNotExists, "PassiveMod.off", PASSIVE_MODE_OFF);
+		
+		FREEZE_ON = procString(y, fileNotExists, "freeze.on", FREEZE_ON);
+		FREEZE_OFF = procString(y, fileNotExists, "freeze.off", FREEZE_OFF);
+		FREEZE_ON_TARGET = procString(y, fileNotExists, "freeze.target.on", FREEZE_ON_TARGET);
+		FREEZE_OFF_TARGET = procString(y, fileNotExists, "freeze.target.off", FREEZE_OFF_TARGET);
+		FREEZE_SELF = procString(y, fileNotExists, "freeze.self", FREEZE_SELF);
+		YOU_FREEZED = procString(y, fileNotExists, "freeze.denyYorFreezed", YOU_FREEZED);
+		
+		UNDRESSED = procString(y, fileNotExists, "undressed.success", UNDRESSED);
+		UNDRESSED_FULL = procString(y, fileNotExists, "undressed.full", UNDRESSED_FULL);
+		UNDRESSED_TARGET = procString(y, fileNotExists, "undressed.target", UNDRESSED_TARGET);
+		
+		WORLD_LIST = procString(y, fileNotExists, "World.List", WORLD_LIST);
+		WORLD_LIST_FOOTER = procString(y, fileNotExists, "World.ListFooter", WORLD_LIST_FOOTER);
+		WORLD_LOAD = procString(y, fileNotExists, "World.Load", WORLD_LOAD);
+		WORLD_LOAD_COMPLETE = procString(y, fileNotExists, "World.LoadComplete", WORLD_LOAD_COMPLETE);
+		WORLD_UNLOAD = procString(y, fileNotExists, "World.Unload", WORLD_UNLOAD);
+		WORLD_UNLOAD_COMPLETE = procString(y, fileNotExists, "World.UnloadComplete", WORLD_UNLOAD_COMPLETE);
+		WORLD_UNLOAD_ERROR = procString(y, fileNotExists, "World.UnloadError", WORLD_UNLOAD_ERROR);
+		
+		WORLD_NOT_FOUND = procString(y, fileNotExists, "World.NotFound", WORLD_NOT_FOUND);
+		PLAYER_NOT_FOUND = procString(y, fileNotExists, "Player.NotFound", PLAYER_NOT_FOUND);
+		PLAYER_BED_NOT_FOUND = procString(y, fileNotExists, "Player.BedNotFound", PLAYER_BED_NOT_FOUND);
+		
+		SLEEP_ON = procString(y, fileNotExists, "Sleep.on", SLEEP_ON);
+		SLEEP_OFF = procString(y, fileNotExists, "Sleep.off", SLEEP_OFF);
+		
+		COMBAT_IN_YOU = procString(y, fileNotExists, "Combat.inCombat", COMBAT_IN_YOU);
+		COMBAT_OUT_YOU = procString(y, fileNotExists, "Combat.outCombat", COMBAT_OUT_YOU);
+		
+		YES = procString(y, fileNotExists, "yes", YES);
+		NO = procString(y, fileNotExists, "no", NO);
+		
+		PLAYER_STAT = procString(y, fileNotExists, "stats.header", PLAYER_STAT);
+		PLAYER_STAT_FOOTER = procString(y, fileNotExists, "stats.footer", PLAYER_STAT_FOOTER);
+		
+		WORLD = procString(y, fileNotExists, "stats.world", WORLD);
+		GAME_MODE = procString(y, fileNotExists, "stats.gamemode", GAME_MODE);
+		HEALTH = procString(y, fileNotExists, "stats.health", HEALTH);
+		FOOD_LEVEL = procString(y, fileNotExists, "stats.food_level", FOOD_LEVEL);
+		EXP = procString(y, fileNotExists, "stats.exp", EXP);
+		OPERATOR = procString(y, fileNotExists, "stats.operator", OPERATOR);
+		FREEZED = procString(y, fileNotExists, "stats.freezed", FREEZED);
+		FLYING = procString(y, fileNotExists, "stats.flying", FLYING);
+		COMBAT_IN = procString(y, fileNotExists, "stats.combat", COMBAT_IN);
+		PASSIVEMODE_STAT = procString(y, fileNotExists, "stats.passivemode", PASSIVEMODE_STAT);
+		
+		if (!f.exists()) {
 			try {y.save(f);} catch (IOException e) {
-				SCCore.getInstance().getLogger().info("Ошибка сохранения messages.yml.");
+				Bukkit.getLogger().info("Ошибка сохранения messages.yml.");
 			}
-		} else {
-			PERMISSION_DENY = Utils.replaceColorCodes(y.getString("PermissionDeny"));
-			COMMAND_FOR_PLAYERS = y.getString("CommandOnlyForPlayers");
-
-			SERVER_OFF_WHITH = Utils.replaceColorCodes(y.getString("ServerOff.With"));
-			SERVER_OFF_SECONDS = Utils.replaceColorCodes(y.getString("ServerOff.Seconds"));
-			SERVER_OFF_MINUTES = Utils.replaceColorCodes(y.getString("ServerOff.Minutes"));
-			SERVER_OFF_HOURS = Utils.replaceColorCodes(y.getString("ServerOff.Hours"));
-
-			AFK_ALREADY_WAIT = Utils.replaceColorCodes(y.getString("Afk.AlreadyWait"));
-			AFK_ON = Utils.replaceColorCodes(y.getString("Afk.On"));
-			AFK_OFF = Utils.replaceColorCodes(y.getString("Afk.Off"));
-			AFK_WAIT = Utils.replaceColorCodes(y.getString("Afk.Wait"));
-			AFK_DENIED_WHEN_FREEZED = Utils.replaceColorCodes(y.getString("Afk.DeniedWhenFreezed"));
-			AFK_KICK_REASON = Utils.replaceColorCodes(y.getString("Afk.KickReason"));
-			AFK_PREFIX = Utils.replaceColorCodes(y.getString("Afk.Prefix"));
-			
-			IN_COMBAT = Utils.replaceColorCodes(y.getString("Combat.inCombat"));
-			OUT_COMBAT = Utils.replaceColorCodes(y.getString("Combat.outCombat"));
-			
-			FLY_DENYED = Utils.replaceColorCodes(y.getString("Fly.Deny"));
-			FLY_ON = Utils.replaceColorCodes(y.getString("Fly.OnSelf"));
-			FLY_OFF = Utils.replaceColorCodes(y.getString("Fly.OffSelf"));
-			FLY_ON_OTHER = Utils.replaceColorCodes(y.getString("Fly.OnOther"));
-			FLY_OFF_OTHER = Utils.replaceColorCodes(y.getString("Fly.OffOther"));
-			FLY_DENY_OTHER = Utils.replaceColorCodes(y.getString("Fly.DenyOther"));
-			
-			HEAL_DENYED = Utils.replaceColorCodes(y.getString("Heal.Denyed"));
-			HEAL_SUCCESS = Utils.replaceColorCodes(y.getString("Heal.Success"));
-			HEAL_SUCCESS_OTHER = Utils.replaceColorCodes(y.getString("Heal.SuccessOther"));
-			HEAL_ERR_INTEGER = Utils.replaceColorCodes(y.getString("Heal.ErrInteger"));
-			
-			WORLD_LIST = Utils.replaceColorCodes(y.getString("World.List"));
-			WORLD_LIST_FOOTER = Utils.replaceColorCodes(y.getString("World.ListFooter"));
-			WORLD_LOAD = Utils.replaceColorCodes(y.getString("World.Load"));
-			WORLD_LOAD_COMPLETE = Utils.replaceColorCodes(y.getString("World.LoadComplete"));
-			WORLD_UNLOAD = Utils.replaceColorCodes(y.getString("World.Unload"));
-			WORLD_UNLOAD_COMPLETE = Utils.replaceColorCodes(y.getString("World.UnloadComplete"));
-			WORLD_UNLOAD_ERROR = Utils.replaceColorCodes(y.getString("World.UnloadError"));
-			
-			PLAYER_NOT_FOUND = Utils.replaceColorCodes(y.getString("Player.NotFound"));
-			
-			WORLD_NOT_FOUND = Utils.replaceColorCodes(y.getString("World.NotFound"));
-			
-			SLEEP_ON = Utils.replaceColorCodes(y.getString("Sleep.on"));
-			SLEEP_OFF = Utils.replaceColorCodes(y.getString("Sleep.off"));
-			
-			YES = Utils.replaceColorCodes(y.getString("yes"));
-			NO = Utils.replaceColorCodes(y.getString("no"));
-			
-			PLAYER_STAT = Utils.replaceColorCodes(y.getString("stats.header"));
-			PLAYER_STAT_FOOTER = Utils.replaceColorCodes(y.getString("stats.footer"));
-			
-			WORLD = Utils.replaceColorCodes(y.getString("stats.world"));
-			GAME_MODE = Utils.replaceColorCodes(y.getString("stats.gamemode"));
-			HEALTH = Utils.replaceColorCodes(y.getString("stats.health"));
-			FOOD_LEVEL = Utils.replaceColorCodes(y.getString("stats.food_level"));
-			EXP = Utils.replaceColorCodes(y.getString("stats.exp"));
-			OPERATOR = Utils.replaceColorCodes(y.getString("stats.operator"));
-			FREEZED = Utils.replaceColorCodes(y.getString("stats.freezed"));
-			FLYING = Utils.replaceColorCodes(y.getString("stats.flying"));
 		}
 	}
-	
-	public static void setDeafultMessages(YamlConfiguration y) {
-		y.options().copyDefaults(true);
-		
-		y.addDefault("PermissionDeny", PERMISSION_DENY);
-		y.addDefault("CommandOnlyForPlayers", COMMAND_FOR_PLAYERS);
-		y.addDefault("ServerOff.With", SERVER_OFF_WHITH);
-		y.addDefault("ServerOff.Seconds", SERVER_OFF_SECONDS);
-		y.addDefault("ServerOff.Minutes", SERVER_OFF_MINUTES);
-		y.addDefault("ServerOff.Hours", SERVER_OFF_HOURS);
-
-		y.addDefault("Afk.AlreadyWait", AFK_ALREADY_WAIT);
-		y.addDefault("Afk.On", AFK_ON);
-		y.addDefault("Afk.Off", AFK_OFF);
-		y.addDefault("Afk.Wait", AFK_WAIT);
-		y.addDefault("Afk.DeniedWhenFreezed", AFK_DENIED_WHEN_FREEZED);
-		y.addDefault("Afk.KickReason", AFK_KICK_REASON);
-		y.addDefault("Afk.Prefix", AFK_PREFIX);
-		
-		y.addDefault("Combat.inCombat", IN_COMBAT);
-		y.addDefault("Combat.outCombat", OUT_COMBAT);
-		
-		y.addDefault("Player.NotFound", PLAYER_NOT_FOUND);
-		
-		y.addDefault("World.NotFound", WORLD_NOT_FOUND);
-		
-		y.addDefault("Fly.Deny", FLY_DENYED);
-		y.addDefault("Fly.OnSelf", FLY_ON);
-		y.addDefault("Fly.OffSelf", FLY_OFF);
-		y.addDefault("Fly.OnOther", FLY_ON_OTHER);
-		y.addDefault("Fly.OffOther", FLY_OFF_OTHER);
-		y.addDefault("Fly.DenyOther", FLY_DENY_OTHER);
-		
-		y.addDefault("Heal.Denyed", HEAL_DENYED);
-		y.addDefault("Heal.Success", HEAL_SUCCESS);
-		y.addDefault("Heal.SuccessOther", HEAL_SUCCESS_OTHER);
-		y.addDefault("Heal.ErrInteger", HEAL_ERR_INTEGER);
-		
-		y.addDefault("World.List", WORLD_LIST);
-		y.addDefault("World.ListFooter", WORLD_LIST_FOOTER);
-		y.addDefault("World.Load", WORLD_LOAD);
-		y.addDefault("World.LoadComplete", WORLD_LOAD_COMPLETE);
-		y.addDefault("World.Unload", WORLD_UNLOAD);
-		y.addDefault("World.UnloadComplete", WORLD_UNLOAD_COMPLETE);
-		y.addDefault("World.UnloadError", WORLD_UNLOAD_ERROR);
-		
-		y.addDefault("Sleep.on", SLEEP_ON);
-		y.addDefault("Sleep.off", SLEEP_OFF);
-		
-		y.addDefault("yes", YES);
-		y.addDefault("no", NO);
-		
-		y.addDefault("stats.header", PLAYER_STAT);
-		y.addDefault("stats.footer", PLAYER_STAT_FOOTER);
-		
-		y.addDefault("stats.world", WORLD);
-		y.addDefault("stats.gamemode", GAME_MODE);
-		y.addDefault("stats.health", HEALTH);
-		y.addDefault("stats.food_level", FOOD_LEVEL);
-		y.addDefault("stats.exp", EXP);
-		y.addDefault("stats.operator", OPERATOR);
-		y.addDefault("stats.freezed", FREEZED);
-		y.addDefault("stats.flying", FLYING);
+	/**
+	 * Попытаться загрузить строку из конфига
+	 * @param y - Конфиг
+	 * @param fileNotExists - Если файл конфигурации не существует
+	 * @param alias - Идентификатор конфигурации
+	 * @param value - Значение по умолчанию
+	 * @return
+	 */
+	private static String procString(YamlConfiguration y, boolean fileNotExists, String alias, String value) {
+		return procString(y, fileNotExists, alias, value, true);
+	}
+	/**
+	 * Попытаться загрузить строку из конфига
+	 * @param y - Конфиг
+	 * @param fileNotExists - Если файл конфигурации не существует
+	 * @param alias - Идентификатор конфигурации
+	 * @param value - Значение по умолчанию
+	 * @param replaceColors - Заменять & на символ цветов чата
+	 * @return
+	 */
+	private static String procString(YamlConfiguration y, boolean fileNotExists, String alias, String value, boolean replaceColors) {
+		y.addDefault(alias, value);
+		if (fileNotExists) {
+			return value;
+		} else if (replaceColors)
+			return Utils.replaceColorCodes(y.getString(alias));
+		else
+			return y.getString(alias);
+	}
+	/**
+	 * Попытаться загрузить длинное целочисленное значение из конфига
+	 * @param y - Конфиг
+	 * @param fileNotExists - Если файл конфигурации не существует
+	 * @param alias - Идентификатор конфигурации
+	 * @param value - Значение по умолчанию
+	 * @return
+	 */
+	private static long procLong(YamlConfiguration y, boolean fileNotExists, String alias, long value) {
+		y.addDefault(alias, value);
+		if (fileNotExists) {
+			return value;
+		} else
+			return y.getLong(alias);
+	}
+	/**
+	 * Попытаться загрузить логическое значение из конфига
+	 * @param y - Конфиг
+	 * @param fileNotExists - Если файл конфигурации не существует
+	 * @param alias - Идентификатор конфигурации
+	 * @param value - Значение по умолчанию
+	 * @return
+	 */
+	private static boolean procBoolean(YamlConfiguration y, boolean fileNotExists, String alias, boolean value) {
+		y.addDefault(alias, value);
+		if (fileNotExists) {
+			return value;
+		} else
+			return y.getBoolean(alias);
+	}
+	/**
+	 * Попытаться загрузить логическое значение из конфига
+	 * @param y - Конфиг
+	 * @param fileNotExists - Если файл конфигурации не существует
+	 * @param alias - Идентификатор конфигурации
+	 * @param value - Значение по умолчанию
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Integer> procListInteger(YamlConfiguration y, boolean fileNotExists, String alias, List<Integer> value) {
+		y.addDefault(alias, value);
+		if (fileNotExists) {
+			return value;
+		} else {
+			List<?> list = y.getList(alias);
+			if (!list.isEmpty() && list.get(0) instanceof Integer) {
+				return (List<Integer>)list;
+			} else
+				return new ArrayList<>();
+		}
 	}
 }

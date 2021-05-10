@@ -12,8 +12,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import ru.seriouscompany.essentials.api.PlayerFlag;
 import ru.seriouscompany.essentials.commands.CAFK;
 import ru.seriouscompany.essentials.commands.CFeed;
 import ru.seriouscompany.essentials.commands.CFly;
@@ -22,13 +25,17 @@ import ru.seriouscompany.essentials.commands.CHeal;
 import ru.seriouscompany.essentials.commands.CLockBook;
 import ru.seriouscompany.essentials.commands.COpenEnder;
 import ru.seriouscompany.essentials.commands.COpenInventory;
+import ru.seriouscompany.essentials.commands.CPassiveModeToggle;
 import ru.seriouscompany.essentials.commands.CPlayerInfo;
 import ru.seriouscompany.essentials.commands.CReload;
 import ru.seriouscompany.essentials.commands.CRequestAccept;
 import ru.seriouscompany.essentials.commands.CSleepIgnore;
 import ru.seriouscompany.essentials.commands.CSpectatorModeToggle;
 import ru.seriouscompany.essentials.commands.CSuicide;
+import ru.seriouscompany.essentials.commands.CTeleportToPlayer;
+import ru.seriouscompany.essentials.commands.CTeleportToPlayerBed;
 import ru.seriouscompany.essentials.commands.CTeleportWorld;
+import ru.seriouscompany.essentials.commands.CUndress;
 import ru.seriouscompany.essentials.commands.CWorld;
 import ru.seriouscompany.essentials.listeners.BlockListener;
 import ru.seriouscompany.essentials.listeners.EntityListener;
@@ -52,7 +59,8 @@ public class SCCore extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
-		Config.init();
+		Config.loadConfig();
+		Config.loadMessages();
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -79,12 +87,25 @@ public class SCCore extends JavaPlugin {
 		getCommand("freeze").setExecutor(new CFreeze());
 		getCommand("accept").setExecutor(new CRequestAccept());
 		getCommand("specmode").setExecutor(new CSpectatorModeToggle());
+		getCommand("tpp").setExecutor(new CTeleportToPlayer());
+		getCommand("tpp").setTabCompleter(new TCPlayerArgument());
+		getCommand("tpb").setExecutor(new CTeleportToPlayerBed());
+		getCommand("tpb").setTabCompleter(new TCPlayerArgument());
+		getCommand("undress").setExecutor(new CUndress());
+		getCommand("undress").setTabCompleter(new TCPlayerArgument());
+		getCommand("passive").setExecutor(new CPassiveModeToggle());
 		
 		checkTimedStop();
 		
 		if (Config.AFK_KICK > 0 || Config.AFK_AUTO > 0) {
 			afkTask = new AFKTask();
 			afkTask.runTaskTimer(this, 1000, 1000);
+		}
+		
+		Bukkit.getOnlinePlayers();
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			PlayerFlag.setPlayerFlag(player, "PASSIVE_MODE", false);
+			PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
 		}
 		
 		getLogger().info("Плагин запущен");

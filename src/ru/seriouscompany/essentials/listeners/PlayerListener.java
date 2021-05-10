@@ -1,7 +1,6 @@
 package ru.seriouscompany.essentials.listeners;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,7 +17,6 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -38,11 +36,11 @@ public class PlayerListener implements Listener {
 		if (Utils.isPlayerFreezed(player))
 			Utils.setPlayerFREEZE(player, false);
 		if (
-				Config.PLAYERS_IN_COMBAT.containsKey(player) 
+				Config.KILL_COMBAT_LEAVER
+				&&
+				PlayerFlag.getPlayerFlag(player, "IN_COMBAT").asBoolean()
 				&& 
 				!player.isPermissionSet("scessentials.combat")
-				&&
-				Config.KILL_COMBAT_LEAVER
 			) {
 			player.setHealth(0);
 		}
@@ -53,6 +51,8 @@ public class PlayerListener implements Listener {
 	public void onJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
 		if (Config.AFK_TEAM) Utils.removePlayerFromAfkTeam(player);
+		PlayerFlag.setPlayerFlag(player, "PASSIVE_MODE", false);
+		PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -78,8 +78,9 @@ public class PlayerListener implements Listener {
 			e.setCancelled(true);
 		else
 			PlayerFlag.setPlayerFlag(e.getPlayer(), "lastActive", System.currentTimeMillis());
-		if(Config.PLAYERS_IN_COMBAT.containsKey(player) && Config.COMBAT_MESSAGES)
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.IN_COMBAT));
+		
+		if(Config.COMBAT_MESSAGES && PlayerFlag.getPlayerFlag(player, "IN_COMBAT").asBoolean())
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.COMBAT_IN_YOU));
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -133,27 +134,41 @@ public class PlayerListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onDamageEntity(EntityDamageByEntityEvent e) {
 		if (e.getDamager() instanceof Player) {
-			if (Utils.isPlayerFreezed((Player) e.getDamager()))
+			
+			// Заморозка
+			if (Utils.isPlayerFreezed((Player) e.getDamager())) {
 				e.setCancelled(true);
-			else
+				return;
+			} else
 				PlayerFlag.setPlayerFlag((Player) e.getDamager(), "lastActive", System.currentTimeMillis());
+			
+			// Пассивный режим
+			if (PlayerFlag.getPlayerFlag((Player) e.getDamager(), "PASSIVE_MODE").asBoolean()) {
+				e.setCancelled(true);
+				return;
+			}
 		}
-		if(e.getEntityType() == EntityType.PLAYER && e.getDamager().getType() == EntityType.PLAYER)
-        {
-            Player player = (Player) e.getEntity();
-			if (Config.COMBAT_MESSAGES) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.IN_COMBAT));
-            if(Config.PLAYERS_IN_COMBAT.containsKey(player))
-            {
-            	Config.PLAYERS_IN_COMBAT.get(player).cancel();
-            	Config.PLAYERS_IN_COMBAT.remove(player);
-            }
-            BukkitTask bukkitTask = Bukkit.getScheduler().runTaskLater(SCCore.getInstance(), () ->
-            {
-            	if (Config.COMBAT_MESSAGES) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.OUT_COMBAT));
-				Config.PLAYERS_IN_COMBAT.get(player).cancel();
-				Config.PLAYERS_IN_COMBAT.remove(player);
-            }, 20L * Config.COMBAT_TIME);
-            Config.PLAYERS_IN_COMBAT.put(player, bukkitTask);
-        }
+		
+		// Пассивный режим
+		if (e.getEntity() instanceof Player && PlayerFlag.getPlayerFlag((Player)e.getEntity(), "PASSIVE_MODE").asBoolean()) {
+			e.setCancelled(true);
+			return;
+		}
+		
+		// Режим боя
+		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+			final Player player = (Player) e.getEntity();
+			PlayerFlag.setPlayerFlag(player, "IN_COMBAT", true);
+			
+			if (Config.COMBAT_MESSAGES)
+				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.COMBAT_IN_YOU));
+			
+			if (Config.COMBAT_TIME > 0) {
+				Bukkit.getScheduler().runTaskLater(SCCore.getInstance(), () -> {
+					PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
+					if (Config.COMBAT_MESSAGES) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.COMBAT_OUT_YOU));
+				}, 20L * Config.COMBAT_TIME);
+			}
+		}
 	}
 }

@@ -12,7 +12,7 @@ public class CSuicide implements CommandExecutor {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (player.isPermissionSet("scessentials.suicide"))
-				player.damage(player.getHealth());
+				player.setHealth(0);
 		}
 		return true;
 	}
