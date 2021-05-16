@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -130,29 +131,46 @@ public class PlayerListener implements Listener {
 		else
 			PlayerFlag.setPlayerFlag(e.getPlayer(), "lastActive", System.currentTimeMillis());
 	}
-	
+
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-	public void onDamageEntity(EntityDamageByEntityEvent e) {
-		if (e.getDamager() instanceof Player) {
-			
-			// Заморозка
-			if (Utils.isPlayerFreezed((Player) e.getDamager())) {
-				e.setCancelled(true);
-				return;
-			} else
-				PlayerFlag.setPlayerFlag((Player) e.getDamager(), "lastActive", System.currentTimeMillis());
-			
-			// Пассивный режим
-			if (PlayerFlag.getPlayerFlag((Player) e.getDamager(), "PASSIVE_MODE").asBoolean()) {
+	public void onDamage(EntityDamageEvent e) {
+		if (e.getEntity() instanceof Player) {
+
+			Player player = (Player)e.getEntity();
+
+			// Если игрок заморожен
+			if (Utils.isPlayerFreezed(player)) {
 				e.setCancelled(true);
 				return;
 			}
+
 		}
-		
-		// Пассивный режим
-		if (e.getEntity() instanceof Player && PlayerFlag.getPlayerFlag((Player)e.getEntity(), "PASSIVE_MODE").asBoolean()) {
-			e.setCancelled(true);
-			return;
+	}
+	
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	public void onDamageEntity(EntityDamageByEntityEvent e) {
+
+		// Если игрок пробует ударить другого игрока
+		if (e.getDamager() instanceof Player) {
+
+			Player damager = (Player)e.getDamager();
+
+			// Если атакуюущий заморожен
+			if (Utils.isPlayerFreezed(damager)) {
+				e.setCancelled(true);
+				return;
+			} else
+				PlayerFlag.setPlayerFlag(damager, "lastActive", System.currentTimeMillis());
+
+			// Пассивный режим
+			if (e.getEntity() instanceof Player && PlayerFlag.getPlayerFlag((Player)e.getEntity(), "PASSIVE_MODE").asBoolean()) {
+				e.setCancelled(true);
+				return;
+			}
+			if (PlayerFlag.getPlayerFlag(damager, "PASSIVE_MODE").asBoolean()) {
+				e.setCancelled(true);
+				return;
+			}
 		}
 		
 		// Режим боя

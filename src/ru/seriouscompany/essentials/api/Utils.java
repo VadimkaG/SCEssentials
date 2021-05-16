@@ -77,9 +77,9 @@ public abstract class Utils {
 				}
 				eachPlayer.hidePlayer(SCCore.getInstance(), player);
 				eachPlayer.showPlayer(SCCore.getInstance(), player);
-	            		
-	            team.removeEntry(player.getDisplayName());
-	            eachPlayer.setScoreboard(curScoreboard);
+
+				team.removeEntry(player.getDisplayName());
+				eachPlayer.setScoreboard(curScoreboard);
 			}
 			player.setDisplayName(player.getDisplayName().replace(ChatColor.GRAY.toString(), ""));
 		}
@@ -161,6 +161,14 @@ public abstract class Utils {
 			((PlayerFlag)afkFlag).set(value);
 		} else
 			PlayerFlag.setPlayerFlag(player, "FREEZED", value);
+
+		if (value) {
+			player.setFlySpeed(0);
+			player.setWalkSpeed(0);
+		} else {
+			player.setFlySpeed(Config.SPEED_DEFAULT_FLY);
+			player.setWalkSpeed(Config.SPEED_DEFAULT);
+		}
 	}
 	/**
 	 * Запросить разрешение на действие у игрока

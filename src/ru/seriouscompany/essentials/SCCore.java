@@ -107,8 +107,6 @@ public class SCCore extends JavaPlugin {
 			PlayerFlag.setPlayerFlag(player, "PASSIVE_MODE", false);
 			PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
 		}
-		
-		getLogger().info("Плагин запущен");
 	}
 	
 	@Override
@@ -118,7 +116,6 @@ public class SCCore extends JavaPlugin {
 		for (ScheduledFuture<?> task: stopTask) {
 			task.cancel(true);
 		}
-		getLogger().info("Плагин остановлен");
 	}
 	
 	public void checkTimedStop() {

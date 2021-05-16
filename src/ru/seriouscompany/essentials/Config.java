@@ -13,11 +13,14 @@ import ru.seriouscompany.essentials.api.Utils;
 public abstract class Config {
 	public static long WAIT_FOR_AFK = 75;
 	public static long COMBAT_TIME = 5;
+	public static float SPEED_DEFAULT = 0.2f;
+	public static float SPEED_DEFAULT_FLY = 0.2f;
 
 	public static boolean TIMEDSTOP_ENABLE = false;
 	public static boolean TIMEDSTOP_FIXED_TIME = true;
 	public static String TIMEDSTOP_TIME = "04:00:00:000";
 	public static long TIMEDSTOP_DELY = 1;
+
 
 	public static long AFK_AUTO = 0;
 	public static long AFK_KICK = 0;
@@ -121,6 +124,8 @@ public abstract class Config {
 			y.options().copyDefaults(true);
 
 		WAIT_FOR_AFK = procLong(y, fileNotExists, "WaitForAFK", WAIT_FOR_AFK);
+		SPEED_DEFAULT = procFloat(y, fileNotExists, "speedDefault.walk", SPEED_DEFAULT);
+		SPEED_DEFAULT_FLY = procFloat(y, fileNotExists, "speedDefault.fly", SPEED_DEFAULT_FLY);
 		
 		AFK_AUTO = procLong(y, fileNotExists, "Afk.Auto", AFK_AUTO);
 		AFK_KICK = procLong(y, fileNotExists, "Afk.AutoKick", AFK_KICK);
@@ -281,6 +286,21 @@ public abstract class Config {
 			return value;
 		} else
 			return y.getLong(alias);
+	}
+	/**
+	 * Попытаться загрузить длинное целочисленное значение из конфига
+	 * @param y - Конфиг
+	 * @param fileNotExists - Если файл конфигурации не существует
+	 * @param alias - Идентификатор конфигурации
+	 * @param value - Значение по умолчанию
+	 * @return
+	 */
+	private static float procFloat(YamlConfiguration y, boolean fileNotExists, String alias, float value) {
+		y.addDefault(alias, value);
+		if (fileNotExists) {
+			return value;
+		} else
+			return (float)y.getDouble(alias);
 	}
 	/**
 	 * Попытаться загрузить логическое значение из конфига
