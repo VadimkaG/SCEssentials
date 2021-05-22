@@ -1,14 +1,19 @@
 package ru.seriouscompany.essentials.commands;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 
 import ru.seriouscompany.essentials.Config;
-import ru.seriouscompany.essentials.SCCore;
 
 public class CWorldLoad implements CommandExecutor {
 
@@ -22,24 +27,52 @@ public class CWorldLoad implements CommandExecutor {
 			}
 		}
 		if (args.length >= 1 && args.length <= 2) {
-			WorldCreator worldc = new WorldCreator(args[0]);
 			if (args.length > 1) {
-				String worldType = args[1].toUpperCase();
-				switch (worldType) {
-				case "THE_END":
-				case "NETHER":
-					worldc.environment(Environment.valueOf(args[1]));
-					break;
-				default:
-					worldc.environment(Environment.valueOf("WORLD"));
-				}
+				loadWorld(args[0], args[1]);
+			} else {
+				loadWorld(args[0], "NORMAL");
 			}
-			SCCore.getInstance().getServer().broadcastMessage(Config.WORLD_LOAD.replace("%WORLD%", args[0]));
-			worldc.createWorld();
-			SCCore.getInstance().getServer().broadcastMessage(Config.WORLD_LOAD_COMPLETE.replace("%WORLD%", args[0]));
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Пустой генератор чанков
+	 */
+	private static class EmptyChunkGenerator extends ChunkGenerator {
+		@Override
+		public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
+			return createChunkData(world);
+		}
+	}
+	/**
+	 * Загрузить мир
+	 * @param name Название мира
+	 * @param type Тип мира
+	 */
+	public static void loadWorld(String name, String type) {
+		WorldCreator worldc = new WorldCreator(name);
+		String worldType = type.toUpperCase();
+		switch (worldType) {
+		case "EMPTY":
+			worldc.environment(Environment.NORMAL);
+			worldc.generator(new EmptyChunkGenerator());
+			break;
+		case "FLAT":
+			worldc.environment(Environment.NORMAL);
+			worldc.type(WorldType.FLAT);
+			break;
+		case "THE_END":
+		case "NETHER":
+			worldc.environment(Environment.valueOf(type));
+			break;
+		default:
+			worldc.environment(Environment.NORMAL);
+		}
+		Bukkit.broadcastMessage(Config.WORLD_LOAD.replace("%WORLD%", name));
+		worldc.createWorld();
+		Bukkit.broadcastMessage(Config.WORLD_LOAD_COMPLETE.replace("%WORLD%", name));
 	}
 
 }

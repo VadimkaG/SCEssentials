@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -18,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import ru.seriouscompany.essentials.api.PlayerFlag;
 import ru.seriouscompany.essentials.commands.CAFK;
+import ru.seriouscompany.essentials.commands.CBlockUnderMe;
 import ru.seriouscompany.essentials.commands.CFeed;
 import ru.seriouscompany.essentials.commands.CFly;
 import ru.seriouscompany.essentials.commands.CFreeze;
@@ -37,6 +40,7 @@ import ru.seriouscompany.essentials.commands.CTeleportToPlayerBed;
 import ru.seriouscompany.essentials.commands.CTeleportWorld;
 import ru.seriouscompany.essentials.commands.CUndress;
 import ru.seriouscompany.essentials.commands.CWorld;
+import ru.seriouscompany.essentials.commands.CWorldLoad;
 import ru.seriouscompany.essentials.listeners.BlockListener;
 import ru.seriouscompany.essentials.listeners.EntityListener;
 import ru.seriouscompany.essentials.listeners.PlayerListener;
@@ -61,6 +65,13 @@ public class SCCore extends JavaPlugin {
 		INSTANCE = this;
 		Config.loadConfig();
 		Config.loadMessages();
+		
+		Map<String, String> worlds = Config.getWorldList();
+		for (Entry<String, String> world : worlds.entrySet()) {
+			getLogger().info("Мир: "+world.getKey()+" - "+world.getValue());
+//			CWorldLoad.loadWorld(world.getKey(), world.getValue());
+		}
+		
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -94,6 +105,7 @@ public class SCCore extends JavaPlugin {
 		getCommand("undress").setExecutor(new CUndress());
 		getCommand("undress").setTabCompleter(new TCPlayerArgument());
 		getCommand("passive").setExecutor(new CPassiveModeToggle());
+		getCommand("bunder").setExecutor(new CBlockUnderMe());
 		
 		checkTimedStop();
 		

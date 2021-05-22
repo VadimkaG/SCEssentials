@@ -3,9 +3,13 @@ package ru.seriouscompany.essentials;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import ru.seriouscompany.essentials.api.Utils;
@@ -242,6 +246,38 @@ public abstract class Config {
 				Bukkit.getLogger().info("Ошибка сохранения messages.yml.");
 			}
 		}
+	}
+	/**
+	 * Сохранить миры, которые будут автоматически загружены при запуске плагина
+	 * @param worlds - Список миров
+	 */
+	public static void setWorldList(Map<String, String> worlds) {
+		File f = new File("plugins/SCEssentials/worlds.yml");
+		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
+		y.set("worlds", null);
+		for (Entry<String, String> world: worlds.entrySet()) {
+			y.set(world.getKey(), world.getValue());
+		}
+		try {y.save(f);} catch (IOException e) {
+			Bukkit.getLogger().info("Ошибка сохранения worlds.yml.");
+		}
+	}
+	/**
+	 * Получить список миров
+	 * @return
+	 */
+	public static Map<String, String> getWorldList() {
+		File f = new File("plugins/SCEssentials/worlds.yml");
+		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
+		if (f.exists()) {
+			ConfigurationSection section = y.getConfigurationSection("worlds");
+			HashMap<String, String> map = new HashMap<>();
+			for (String key : section.getKeys(false)) {
+				map.put(key, section.getString(key));
+			}
+			return map;
+		}
+		return new HashMap<>();
 	}
 	/**
 	 * Попытаться загрузить строку из конфига

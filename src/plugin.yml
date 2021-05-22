@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 5.1
+version: 6
 api-version: 1.16
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -64,6 +64,9 @@ commands:
   passive:
     description: Пассивный режим
     user: /<command>
+  bunder:
+    description: Стави т блок под вами
+    user: /<command>
 permissions:
   scessentials.*:
     description: Все преимущества плагина
@@ -86,6 +89,7 @@ permissions:
       scessentials.teleport.*: true
       scessentials.undress: true
       scessentials.passivemode: true
+      scessentials.blockunderme: true
   scessentials.suicide:
     description: Дает преимущества суицида
     default: true
@@ -184,5 +188,8 @@ permissions:
     default: false
   scessentials.passivemode:
     description: Возможность использовать пассивный режим
+    default: false
+  scessentials.blockunderme:
+    description: Возможность поставить блок под собой
     default: false
 
