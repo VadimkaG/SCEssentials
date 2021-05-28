@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 6
+version: 6.2
 api-version: 1.16
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -165,6 +165,9 @@ permissions:
     default: false
   scessentials.teleport.tobed.other:
     description: Телепортироваться на чужую кровать
+    default: false
+  scessentials.teleport.immunity:
+    description: Имунитет к телепортам к себе
     default: false
   scessentials.world.*:
     description: Дает преимущество работать с командами миров

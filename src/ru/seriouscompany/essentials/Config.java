@@ -34,6 +34,8 @@ public abstract class Config {
 	public static boolean COMBAT_MESSAGES = false;
 
 	public static boolean WORLD_AUTO_LOAD = false;
+	
+	public static boolean allowTeleportImmunity = false;
 
 	public static List<Integer> TIMEDSTOP_WARNS = new ArrayList<Integer>();
 
@@ -128,6 +130,7 @@ public abstract class Config {
 			y.options().copyDefaults(true);
 
 		WAIT_FOR_AFK = procLong(y, fileNotExists, "WaitForAFK", WAIT_FOR_AFK);
+		allowTeleportImmunity = procBoolean(y, fileNotExists, "teleport.allowImmunity", allowTeleportImmunity);
 		SPEED_DEFAULT = procFloat(y, fileNotExists, "speedDefault.walk", SPEED_DEFAULT);
 		SPEED_DEFAULT_FLY = procFloat(y, fileNotExists, "speedDefault.fly", SPEED_DEFAULT_FLY);
 		

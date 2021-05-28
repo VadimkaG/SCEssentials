@@ -42,6 +42,12 @@ public class CTeleportToPlayerBed implements CommandExecutor {
 					);
 				return true;
 			}
+			
+			if (Config.allowTeleportImmunity && target.isPermissionSet("scessentials.teleport.immunity")) {
+				sender.sendMessage(Config.PERMISSION_DENY);
+				return true;
+			}
+			
 			Location loc = target.getBedSpawnLocation();
 			if (loc == null) {
 				sender.sendMessage(Config.PLAYER_BED_NOT_FOUND

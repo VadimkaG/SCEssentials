@@ -68,8 +68,8 @@ public class SCCore extends JavaPlugin {
 		
 		Map<String, String> worlds = Config.getWorldList();
 		for (Entry<String, String> world : worlds.entrySet()) {
-			getLogger().info("Мир: "+world.getKey()+" - "+world.getValue());
-//			CWorldLoad.loadWorld(world.getKey(), world.getValue());
+			//getLogger().info("Мир: "+world.getKey()+" - "+world.getValue());
+			CWorldLoad.loadWorld(world.getKey(), world.getValue());
 		}
 		
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);

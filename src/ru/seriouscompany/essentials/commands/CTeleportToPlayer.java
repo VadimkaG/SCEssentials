@@ -34,6 +34,11 @@ public class CTeleportToPlayer implements CommandExecutor {
 			return true;
 		}
 		
+		if (Config.allowTeleportImmunity && target.isPermissionSet("scessentials.teleport.immunity")) {
+			sender.sendMessage(Config.PERMISSION_DENY);
+			return true;
+		}
+		
 		player.teleport(target);
 		return true;
 	}
