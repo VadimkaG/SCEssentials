@@ -9,14 +9,13 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import ru.seriouscompany.essentials.Config;
-import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.Utils;
 
 public class AFKTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		Collection<? extends Player> players = SCCore.getInstance().getServer().getOnlinePlayers();
+		Collection<? extends Player> players = Bukkit.getServer().getOnlinePlayers();
 		for (Player player: players) {
 			List<MetadataValue> metavalue = player.getMetadata("lastActive");
 			if (metavalue.size() > 0) {

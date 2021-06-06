@@ -23,7 +23,7 @@ public class CAFK implements CommandExecutor {
 			}
 			if (Utils.isPlayerAFK(player)) {
 				Utils.setPlayerAFK(player, false);
-				SCCore.getInstance().getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
+				Bukkit.getServer().broadcastMessage(Config.AFK_OFF.replace("%PLAYER%", player.getName()));
 				Utils.removePlayerFromAfkTeam(player);
 			} else {
 				if (!player.isPermissionSet("scessentials.afk")) {

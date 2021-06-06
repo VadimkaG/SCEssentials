@@ -12,14 +12,12 @@ public class CTeleportToPlayer implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+		if (!sender.isPermissionSet("scessentials.teleport.toplayers")) {
+			sender.sendMessage(Config.PERMISSION_DENY);
 			return true;
 		}
-		
-		Player player = (Player)sender;
-		if (!player.isPermissionSet("scessentials.teleport.toplayers")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
 			return true;
 		}
 		
@@ -39,7 +37,7 @@ public class CTeleportToPlayer implements CommandExecutor {
 			return true;
 		}
 		
-		player.teleport(target);
+		((Player)sender).teleport(target);
 		return true;
 	}
 

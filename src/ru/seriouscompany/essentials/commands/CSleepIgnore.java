@@ -11,12 +11,12 @@ public class CSleepIgnore implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String str, String[] strs) {
+		if (!sender.isPermissionSet("scessentials.sleepignore")) {
+			sender.sendMessage(Config.PERMISSION_DENY);
+			return true;
+		}
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (!player.isPermissionSet("scessentials.sleepignore")) {
-				player.sendMessage(Config.PERMISSION_DENY);
-				return true;
-			}
 			if (player.isSleepingIgnored()) {
 				player.setSleepingIgnored(false);
 				player.sendMessage(Config.SLEEP_ON);

@@ -1,5 +1,6 @@
 package ru.seriouscompany.essentials.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -15,7 +16,6 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 
-import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.Utils;
 
 public class EntityListener implements Listener {
@@ -38,7 +38,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onAttack(EntityDamageByEntityEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
 			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setDamage(0);
 				e.setCancelled(true);
@@ -49,7 +49,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onTarget(EntityTargetEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
 			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setTarget(null);
 				e.setCancelled(true);
@@ -60,7 +60,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
 			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}
@@ -69,7 +69,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onRegainHealth(EntityRegainHealthEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
 			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setAmount(0);
 				e.setCancelled(true);
@@ -80,7 +80,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onInteract(EntityInteractEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
 			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}
@@ -101,7 +101,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onShoot(EntityShootBowEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = SCCore.getInstance().getServer().getPlayer(e.getEntity().getName());
+			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
 			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}

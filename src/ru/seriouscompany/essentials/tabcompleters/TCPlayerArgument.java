@@ -3,12 +3,11 @@ package ru.seriouscompany.essentials.tabcompleters;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-
-import ru.seriouscompany.essentials.SCCore;
 
 public class TCPlayerArgument implements TabCompleter {
 	
@@ -26,7 +25,7 @@ public class TCPlayerArgument implements TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		List<String> data = new ArrayList<String>();
 		if (args.length != ARGS_POS) return data;
-		for (Player player : SCCore.getInstance().getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if (
 					player.getName().equalsIgnoreCase(args[ARGS_POS-1]) || 
 					(

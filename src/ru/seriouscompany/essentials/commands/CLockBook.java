@@ -15,23 +15,25 @@ public class CLockBook implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if (!sender.isPermissionSet("scessentials.lockbook")) {
+			sender.sendMessage(Config.PERMISSION_DENY);
+			return true;
+		}
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (!player.isPermissionSet("scessentials.lockbook")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
+			ItemStack item = player.getInventory().getItemInMainHand();
+			if (item.getType() != Material.WRITTEN_BOOK) {
+				sender.sendMessage("Вы должны держать в руках подписанную книгу");
 				return true;
 			}
-			ItemStack item = player.getInventory().getItemInMainHand();
-			if (item.getType() == Material.WRITTEN_BOOK) {
-				ItemMeta meta = item.getItemMeta();
-				if (meta instanceof BookMeta) {
-					BookMeta bookMeta = (BookMeta)meta;
-					ItemStack newItem = new ItemStack(Material.valueOf("BOOK_AND_QUILL"));
-					newItem.setItemMeta(bookMeta);
-					player.getInventory().setItemInMainHand(newItem);
-				}
-			} else
-				sender.sendMessage("Вы должны держать в руках подписанную книгу");
+
+			ItemMeta meta = item.getItemMeta();
+			if (meta instanceof BookMeta) {
+				BookMeta bookMeta = (BookMeta)meta;
+				ItemStack newItem = new ItemStack(Material.valueOf("BOOK_AND_QUILL"));
+				newItem.setItemMeta(bookMeta);
+				player.getInventory().setItemInMainHand(newItem);
+			}
 		}
 		return false;
 	}

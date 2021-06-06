@@ -55,9 +55,7 @@ public abstract class Config {
 	public static String FLY_OFF = "Теперь вы не можете летать";
 	public static String FLY_ON_OTHER = "Теперь %PLAYER% может летать";
 	public static String FLY_OFF_OTHER = "Теперь %PLAYER% не может летать";
-	public static String FLY_DENY_OTHER = "Вы не можете переключать полет другим игрокам";
 
-	public static String HEAL_DENYED = "Вы не можете лечить других игроков";
 	public static String HEAL_SUCCESS = "Вы вылечены";
 	public static String HEAL_SUCCESS_OTHER = "Вы вылечили игрока %PLAYER%";
 	public static String HEAL_ERR_INTEGER = "Вы должны указать число";
@@ -90,6 +88,9 @@ public abstract class Config {
 	
 	public static String WORLD_LOAD = "Начата подгрузка мира '%WORLD%', пожалуйста подождите...";
 	public static String WORLD_LOAD_COMPLETE = "Подгрузка мира '%WORLD%', завершена.";
+	
+	public static String WORLD_LOAD_AUTO_SET = "Мир %WORLD% добавлен в автозагрузку";
+	public static String WORLD_LOAD_AUTO_UNSET = "Мир %WORLD% удален из автозагрузки";
 
 	public static String WORLD_UNLOAD = "Начата отгрузка мира '%WORLD%', пожалуйста подождите...";
 	public static String WORLD_UNLOAD_COMPLETE = "Отгрузка мира '%WORLD%' завершена.";
@@ -185,9 +186,7 @@ public abstract class Config {
 		FLY_OFF = procString(y, fileNotExists, "Fly.OffSelf", FLY_OFF);
 		FLY_ON_OTHER = procString(y, fileNotExists, "Fly.OnOther", FLY_ON_OTHER);
 		FLY_OFF_OTHER = procString(y, fileNotExists, "Fly.OffOther", FLY_OFF_OTHER);
-		FLY_DENY_OTHER = procString(y, fileNotExists, "Fly.DenyOther", FLY_DENY_OTHER);
 		
-		HEAL_DENYED = procString(y, fileNotExists, "Heal.Denyed", HEAL_DENYED);
 		HEAL_SUCCESS = procString(y, fileNotExists, "Heal.Success", HEAL_SUCCESS);
 		HEAL_SUCCESS_OTHER = procString(y, fileNotExists, "Heal.SuccessOther", HEAL_SUCCESS_OTHER);
 		HEAL_ERR_INTEGER = procString(y, fileNotExists, "Heal.ErrInteger", HEAL_ERR_INTEGER);
@@ -259,7 +258,7 @@ public abstract class Config {
 		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
 		y.set("worlds", null);
 		for (Entry<String, String> world: worlds.entrySet()) {
-			y.set(world.getKey(), world.getValue());
+			y.set("worlds."+world.getKey(), world.getValue());
 		}
 		try {y.save(f);} catch (IOException e) {
 			Bukkit.getLogger().info("Ошибка сохранения worlds.yml.");
@@ -275,6 +274,7 @@ public abstract class Config {
 		if (f.exists()) {
 			ConfigurationSection section = y.getConfigurationSection("worlds");
 			HashMap<String, String> map = new HashMap<>();
+			if (section != null)
 			for (String key : section.getKeys(false)) {
 				map.put(key, section.getString(key));
 			}

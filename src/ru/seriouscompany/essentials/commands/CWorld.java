@@ -11,15 +11,18 @@ public class CWorld implements CommandExecutor {
 	public static final String PREFIX_COMMAND_LIST = "list";
 	public static final String PREFIX_COMMAND_LOAD = "load";
 	public static final String PREFIX_COMMAND_UNLOAD = "unload";
+	public static final String PREFIX_COMMAND_AUTOLOAD = "autoload";
 	
-	private CWorldList commandList;
-	private CWorldLoad commandLoad;
-	private CWorldUnload commandUnload;
+	private CWorldList     commandList;
+	private CWorldLoad     commandLoad;
+	private CWorldUnload   commandUnload;
+	private CWorldLoadAuto commandLoadAuto;
 	
 	public CWorld() {
 		commandList = new CWorldList();
 		commandLoad = new CWorldLoad();
 		commandUnload = new CWorldUnload();
+		commandLoadAuto = new CWorldLoadAuto();
 	}
 
 	@Override
@@ -28,19 +31,23 @@ public class CWorld implements CommandExecutor {
 			String[] newArgs;
 			if (args.length > 1) newArgs = Arrays.copyOfRange(args, 1, args.length);
 			else newArgs = new String[0];
+			boolean commandSuccess = false;
 			switch (args[0].trim()) {
 			case PREFIX_COMMAND_LIST:
-				commandList.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_LIST, newArgs);
+				commandSuccess = commandList.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_LIST, newArgs);
 				break;
 			case PREFIX_COMMAND_LOAD:
-				commandLoad.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_LOAD, newArgs);
+				commandSuccess = commandLoad.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_LOAD, newArgs);
 				break;
 			case PREFIX_COMMAND_UNLOAD:
-				commandUnload.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_UNLOAD, newArgs);
+				commandSuccess = commandUnload.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_UNLOAD, newArgs);
 				break;
-			default:
-				printHelp(sender,label);
+			case PREFIX_COMMAND_AUTOLOAD:
+				commandSuccess = commandLoadAuto.onCommand(sender, cmd, label+" "+PREFIX_COMMAND_AUTOLOAD, newArgs);
+				break;
 			}
+			if (!commandSuccess)
+				printHelp(sender,label);
 		} else {
 			printHelp(sender,label);
 		}
@@ -50,7 +57,8 @@ public class CWorld implements CommandExecutor {
 	private void printHelp(CommandSender sender, String label) {
 		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_LIST+" - Список миров");
 		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_LOAD+" <Мир> - Загрузить мир");
-		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_UNLOAD+" <Мир> <Генератор> - Список миров");
+		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_UNLOAD+" <Мир> <Генератор> - Отгрузить мир");
+		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_AUTOLOAD+" <Мир> <Генератор> - Автоматическая загрузка мира");
 	}
 
 }

@@ -1,5 +1,6 @@
 package ru.seriouscompany.essentials.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -7,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import ru.seriouscompany.essentials.Config;
-import ru.seriouscompany.essentials.SCCore;
 
 public class CUndress implements CommandExecutor {
 
@@ -19,7 +19,7 @@ public class CUndress implements CommandExecutor {
 		}
 		if (args.length != 1)
 			return false;
-		Player target = SCCore.getInstance().getServer().getPlayer(args[0]);
+		Player target = Bukkit.getServer().getPlayer(args[0]);
 		if (target == null) {
 			sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
 			return true;

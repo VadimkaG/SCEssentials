@@ -27,15 +27,17 @@ public class TCWorld implements TabCompleter {
 			tryadd(args, data, CWorld.PREFIX_COMMAND_LIST);
 			tryadd(args, data, CWorld.PREFIX_COMMAND_LOAD);
 			tryadd(args, data, CWorld.PREFIX_COMMAND_UNLOAD);
+			tryadd(args, data, CWorld.PREFIX_COMMAND_AUTOLOAD);
 		} else if (args.length > 1) {
 			String[] newArgs;
 			if (args.length > 1) newArgs = Arrays.copyOfRange(args, 1, args.length);
 			else newArgs = new String[0];
 			switch (args[0].trim()) {
-			case CWorld.PREFIX_COMMAND_UNLOAD:
-				return completerWorld.onTabComplete(sender, cmd, label+" "+CWorld.PREFIX_COMMAND_UNLOAD, newArgs);
+			case CWorld.PREFIX_COMMAND_AUTOLOAD:
 			case CWorld.PREFIX_COMMAND_LOAD:
-				return completerWorldLoad.onTabComplete(sender, cmd, label+" "+CWorld.PREFIX_COMMAND_LOAD, newArgs);
+				data.addAll(completerWorldLoad.onTabComplete(sender, cmd, label+" "+CWorld.PREFIX_COMMAND_LOAD, newArgs));
+			case CWorld.PREFIX_COMMAND_UNLOAD:
+				data.addAll(completerWorld.onTabComplete(sender, cmd, label+" "+CWorld.PREFIX_COMMAND_UNLOAD, newArgs));
 			}
 			
 		}

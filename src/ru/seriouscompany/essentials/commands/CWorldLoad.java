@@ -10,7 +10,6 @@ import org.bukkit.WorldType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 
 import ru.seriouscompany.essentials.Config;
@@ -19,12 +18,9 @@ public class CWorldLoad implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			if (!player.isPermissionSet("scessentials.world.load")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
-				return true;
-			}
+		if (!sender.isPermissionSet("scessentials.world.load")) {
+			sender.sendMessage(Config.PERMISSION_DENY);
+			return true;
 		}
 		if (args.length >= 1 && args.length <= 2) {
 			if (args.length > 1) {

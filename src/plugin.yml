@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 6.2
+version: 6.3
 api-version: 1.16
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -73,7 +73,7 @@ permissions:
     default: op
     children:
       scessentials.afk: true
-      scessentials.feed: true
+      scessentials.feed.*: true
       scessentials.fly.*: true
       scessentials.heal.*: true
       scessentials.openender: true
@@ -102,6 +102,15 @@ permissions:
   scessentials.feed:
     description: Дает преимущество восстановить голод
     default: false
+  scessentials.feed.other:
+    description: Дает преимущество восстановить голод другому игроку
+    default: false
+  scessentials.feed.*:
+    description: Дает преимущество восстановить голод
+    default: false
+    children:
+      scessentials.feed: true
+      scessentials.feed.other: true
   scessentials.fly.*:
     description: Дает преимущество включить полет себе и другим
     default: false
@@ -174,11 +183,16 @@ permissions:
     default: false
     children:
       scessentials.world.teleport: true
+      scessentials.world.teleport.other: true
       scessentials.world.list: true
       scessentials.world.unload: true
       scessentials.world.load: true
+      scessentials.world.autoload: true
   scessentials.world.teleport:
     description: Дает преимущество телепортироваться между мирами
+    default: false
+  scessentials.world.teleport.other:
+    description: Дает преимущество телепортировать игроков между мирами
     default: false
   scessentials.world.list:
     description: Дает преимущество смотреть список миров
@@ -188,6 +202,9 @@ permissions:
     default: false
   scessentials.world.load:
     description: Возможность подгружать миры
+    default: false
+  scessentials.world.autoload:
+    description: Возможность устанавливать миры, которые автоматически загрузятся
     default: false
   scessentials.passivemode:
     description: Возможность использовать пассивный режим
