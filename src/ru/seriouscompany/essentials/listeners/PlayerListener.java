@@ -135,6 +135,12 @@ public class PlayerListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onDamage(EntityDamageEvent e) {
 		if (e.getEntity() instanceof Player) {
+			
+			// Пассивный режим
+			if (PlayerFlag.getPlayerFlag((Player)e.getEntity(), "PASSIVE_MODE").asBoolean()) {
+				e.setCancelled(true);
+				return;
+			}
 
 			Player player = (Player)e.getEntity();
 
@@ -163,10 +169,6 @@ public class PlayerListener implements Listener {
 				PlayerFlag.setPlayerFlag(damager, "lastActive", System.currentTimeMillis());
 
 			// Пассивный режим
-			if (e.getEntity() instanceof Player && PlayerFlag.getPlayerFlag((Player)e.getEntity(), "PASSIVE_MODE").asBoolean()) {
-				e.setCancelled(true);
-				return;
-			}
 			if (PlayerFlag.getPlayerFlag(damager, "PASSIVE_MODE").asBoolean()) {
 				e.setCancelled(true);
 				return;
