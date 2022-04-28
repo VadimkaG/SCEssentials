@@ -6,13 +6,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class COpenEnder implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.openender")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		if (sender instanceof Player) {
@@ -21,14 +21,14 @@ public class COpenEnder implements CommandExecutor {
 			if (args.length == 1) {
 				Player target = Bukkit.getServer().getPlayer(args[0]);
 				if (target == null) {
-					sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
+					sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString().replace("%PLAYER%", args[0]));
 					return true;
 				}
 				player.openInventory(target.getEnderChest());
 			} else
 				return false;
 		} else {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+			sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 		}
 		return false;
 	}

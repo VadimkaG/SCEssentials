@@ -6,14 +6,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CFly implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.fly")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		switch (args.length) {
@@ -22,30 +22,30 @@ public class CFly implements CommandExecutor {
 				Player player = (Player) sender;
 				if (player.getAllowFlight()) {
 					player.setAllowFlight(false);
-					player.sendMessage(Config.FLY_OFF);
+					player.sendMessage(Lang.FLY_OFF.toString());
 				} else {
 					player.setAllowFlight(true);
-					player.sendMessage(Config.FLY_ON);
+					player.sendMessage(Lang.FLY_ON.toString());
 				}
 			} else
-				sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+				sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 			return true;
 		case 1:
 			if (!sender.isPermissionSet("scessentials.fly.other")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
+				sender.sendMessage(Lang.PERMISSION_DENY.toString());
 				return true;
 			}
 			Player target = Bukkit.getServer().getPlayer(args[0]);
 			if (target == null) {
-				sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
+				sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString().replace("%PLAYER%", args[0]));
 				return true;
 			}
 			if (target.getAllowFlight()) {
 				target.setAllowFlight(false);
-				target.sendMessage(Config.FLY_OFF_OTHER.replace("%PLAYER%", target.getName()));
+				target.sendMessage(Lang.FLY_OFF_OTHER.toString().replace("%PLAYER%", target.getName()));
 			} else {
 				target.setAllowFlight(true);
-				target.sendMessage(Config.FLY_ON_OTHER.replace("%PLAYER%", target.getName()));
+				target.sendMessage(Lang.FLY_ON_OTHER.toString().replace("%PLAYER%", target.getName()));
 			}
 			return true;
 		default: return false;

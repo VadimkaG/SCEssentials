@@ -1,11 +1,14 @@
 package ru.seriouscompany.essentials;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +18,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ru.seriouscompany.essentials.api.PlayerFlag;
@@ -63,10 +69,34 @@ public class SCCore extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		INSTANCE = this;
-		Config.loadConfig();
-		Config.loadMessages();
 		
-		Map<String, String> worlds = Config.getWorldList();
+		getConfig().addDefault("WaitForAFK", 75);
+		
+		getConfig().addDefault("speedDefault.walk", 0.2d);
+		getConfig().addDefault("speedDefault.fly", 0.2d);
+		
+		getConfig().addDefault("Timedstop.Enable", false);
+		getConfig().addDefault("Timedstop.FixedTime", true);
+		getConfig().addDefault("Timedstop.Time", "04:00:00:000");
+		getConfig().addDefault("Timedstop.Delyhour", 1);
+		
+		getConfig().addDefault("Afk.Auto", 0l);
+		getConfig().addDefault("Afk.AutoKick", 0l);
+		getConfig().addDefault("Afk.Team", false);
+		
+		getConfig().addDefault("Combat.KillCombatLeavers", false);
+		getConfig().addDefault("Combat.CombatMessages", false);
+		getConfig().addDefault("Combat.CombatTime", 5);
+		
+		//getConfig().addDefault("Worlds.AutoLoad", false);
+		getConfig().addDefault("teleport.allowImmunity", false);
+		
+		getConfig().addDefault("Timedstop.Warnings", new ArrayList<Integer>());
+		
+		saveDefaultConfig();
+		Lang.loadConfiguration();
+		
+		Map<String, String> worlds = getWorldList();
 		for (Entry<String, String> world : worlds.entrySet()) {
 			//getLogger().info("Мир: "+world.getKey()+" - "+world.getValue());
 			CWorldLoad.loadWorld(world.getKey(), world.getValue());
@@ -109,12 +139,13 @@ public class SCCore extends JavaPlugin {
 		
 		checkTimedStop();
 		
-		if (Config.AFK_KICK > 0 || Config.AFK_AUTO > 0) {
+		long auto_kick = getAutoKickTime();
+		
+		if (auto_kick > 0 || auto_kick > 0) {
 			afkTask = new AFKTask();
 			afkTask.runTaskTimer(this, 1000, 1000);
 		}
 		
-		Bukkit.getOnlinePlayers();
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			PlayerFlag.setPlayerFlag(player, "PASSIVE_MODE", false);
 			PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
@@ -128,8 +159,161 @@ public class SCCore extends JavaPlugin {
 		for (ScheduledFuture<?> task: stopTask) {
 			task.cancel(true);
 		}
+		
+		// Вернуть скорость замороженным игрокам
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			
+			if (PlayerFlag.isSetPlayerFlag(player, "OLD_FLY_SPEED")) {
+				MetadataValue flag = PlayerFlag.getPlayerFlag(player, "OLD_FLY_SPEED");
+				if (flag != null)
+					player.setFlySpeed(flag.asFloat());
+			}
+			
+			if (PlayerFlag.isSetPlayerFlag(player, "OLD_WALK_SPEED")) {
+				MetadataValue flag = PlayerFlag.getPlayerFlag(player, "OLD_WALK_SPEED");
+				if (flag != null)
+					player.setWalkSpeed(flag.asFloat());
+			}
+		}
 	}
-	
+	/**
+	 * Время ожидания до ввода следущего ввода команды afk, после ее использования
+	 * @return
+	 */
+	public static long getAFKCooldown() {
+		return INSTANCE.getConfig().getLong("WaitForAFK");
+	}
+	/**
+	 * Время неактивности игрока, через которое ему будет назначен статус AFK
+	 * @return
+	 */
+	public static long getAutoAFKDely() {
+		return INSTANCE.getConfig().getLong("Afk.Auto");
+	}
+	/**
+	 * Получить время простоя в афк, после которого сервер выкинет игрока
+	 * @return
+	 */
+	public static long getAutoKickTime() {
+		return INSTANCE.getConfig().getLong("Afk.AutoKick");
+	}
+	/**
+	 * Включино ли автоматическое отключение сервера
+	 * @return
+	 */
+	public static boolean isTimedStopEnabled() {
+		return INSTANCE.getConfig().getBoolean("Timedstop.Enable");
+	}
+	/**
+	 * Абсолютно ли время выключение сервера или относительное
+	 * @return
+	 */
+	public static boolean isTimedStopFixedTime() {
+		return INSTANCE.getConfig().getBoolean("Timedstop.FixedTime");
+	}
+	/**
+	 * Получить фиксированное время выключение сервера
+	 * @return
+	 */
+	public static String getFixedTime() {
+		return INSTANCE.getConfig().getString("Timedstop.Time");
+	}
+	/**
+	 * Получить относительное время выключения сервера
+	 * @return
+	 */
+	public static int getTimeDely() {
+		return INSTANCE.getConfig().getInt("Timedstop.Delyhour");
+	}
+	/**
+	 * Помещать ли в специальную команду игроков, которые на ходятся в афк
+	 * @return
+	 */
+	public static boolean afkTeamEnabled() {
+		return INSTANCE.getConfig().getBoolean("Afk.Team");
+	}
+	/**
+	 * Стандартная скорость пешком
+	 * @return
+	 */
+	public static double speedDefaultWalk() {
+		return INSTANCE.getConfig().getDouble("speedDefault.walk");
+	}
+	/**
+	 * Стандартная скорость полет
+	 * @return
+	 */
+	public static double speedDefaultFly() {
+		return INSTANCE.getConfig().getDouble("speedDefault.fly");
+	}
+	/**
+	 * Включен ли режим убийства игроков, которые выходят во время боя
+	 * @return
+	 */
+	public static boolean combatKickerEnabled() {
+		return INSTANCE.getConfig().getBoolean("Combat.KillCombatLeavers");
+	}
+	/**
+	 * Включены ли сообщения у режима защиты пвп
+	 * @return
+	 */
+	public static boolean combatMessagesEnabled() {
+		return INSTANCE.getConfig().getBoolean("Combat.CombatMessages");
+	}
+	/**
+	 * Длительность боя, после которой режим защиты пвп выключается
+	 * @return
+	 */
+	public static long combatTime() {
+		return INSTANCE.getConfig().getLong("Combat.CombatTime");
+	}
+	/**
+	 * Включен ли имунитет к телепортам
+	 * @return
+	 */
+	public static boolean teleportImmunityAllow() {
+		return INSTANCE.getConfig().getBoolean("teleport.allowImmunity");
+	}
+	@SuppressWarnings("unchecked")
+	public static List<Integer> getTimeStopedWarns() {
+		return (List<Integer>) INSTANCE.getConfig().getList("Timedstop.Warnings");
+	}
+	/**
+	 * Сохранить миры, которые будут автоматически загружены при запуске плагина
+	 * @param worlds - Список миров
+	 */
+	public static void setWorldList(Map<String, String> worlds) {
+		File f = new File(INSTANCE.getDataFolder().getPath()+"/worlds.yml");
+		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
+		y.set("worlds", null);
+		for (Entry<String, String> world: worlds.entrySet()) {
+			y.set("worlds."+world.getKey(), world.getValue());
+		}
+		try {y.save(f);} catch (IOException e) {
+			Bukkit.getLogger().info("Ошибка сохранения worlds.yml.");
+		}
+	}
+	/**
+	 * Получить список миров
+	 * @return
+	 */
+	public static Map<String, String> getWorldList() {
+		File f = new File(INSTANCE.getDataFolder().getPath()+"/worlds.yml");
+		YamlConfiguration y = YamlConfiguration.loadConfiguration(f);
+		if (f.exists()) {
+			ConfigurationSection section = y.getConfigurationSection("worlds");
+			HashMap<String, String> map = new HashMap<>();
+			if (section != null)
+			for (String key : section.getKeys(false)) {
+				map.put(key, section.getString(key));
+			}
+			return map;
+		}
+		return new HashMap<>();
+	}
+	/**
+	 * Запустить задачу по автоматическому выключению сервера
+	 */
 	public void checkTimedStop() {
 		if (!stopTask.isEmpty()) {
 			for (ScheduledFuture<?> task : stopTask) {
@@ -137,25 +321,27 @@ public class SCCore extends JavaPlugin {
 			}
 			stopTask.clear();
 		}
-		if (Config.TIMEDSTOP_ENABLE) {
+		if (isTimedStopEnabled()) {
 			ScheduledExecutorService timerServerShutdownPool = Executors.newScheduledThreadPool(1);
 			long delay = 0;
-			if (Config.TIMEDSTOP_FIXED_TIME) {
-				LocalTime time = LocalTime.parse(Config.TIMEDSTOP_TIME, DateTimeFormatter.ofPattern("HH:mm:ss:SSS"));
+			int timedStopDely = getTimeDely();
+			if (isTimedStopFixedTime()) {
+				LocalTime time = LocalTime.parse(getFixedTime(), DateTimeFormatter.ofPattern("HH:mm:ss:SSS"));
 				LocalDateTime dateTime;
 				if (time.isAfter(LocalTime.now()))
 					dateTime = LocalDateTime.of(LocalDate.now(), time);
 				else
 					dateTime = LocalDateTime.of(LocalDate.now().plusDays(1), time);
 				delay = LocalDateTime.now().until(dateTime, ChronoUnit.MILLIS);
-			} else if (Config.TIMEDSTOP_DELY > 0)
-				delay = Config.TIMEDSTOP_DELY * 3600000;
+			} else if (timedStopDely > 0)
+				delay = timedStopDely * 3600000;
 			if (delay > 0) {
 				long sec = (delay/1000) % 60;
 				long min = ((delay/1000) / 60) % 60;
 				long hour = ((delay/1000) / 60) / 60;
 				getLogger().info("Автовыключение через "+String.valueOf(hour)+":"+String.valueOf(min)+":"+String.valueOf(sec));
-				for (Integer warnSecond : Config.TIMEDSTOP_WARNS) {
+				List<Integer> warns = getTimeStopedWarns();
+				for (Integer warnSecond : warns) {
 					stopTask.add(timerServerShutdownPool.schedule(new Runnable() {
 						@Override
 						public void run() {
@@ -164,12 +350,12 @@ public class SCCore extends JavaPlugin {
 							int hour = (warnSecond / 60) / 60;
 							String secondMessage = String.valueOf(warnSecond) + " ms";
 							if (hour > 0)
-								secondMessage = String.valueOf(hour) + ":" + String.valueOf(min) + ":" + String.valueOf(sec) + " " + Config.SERVER_OFF_HOURS;
+								secondMessage = String.valueOf(hour) + ":" + String.valueOf(min) + ":" + String.valueOf(sec) + " " + Lang.SERVER_OFF_HOURS;
 							else if (min > 0)
-								secondMessage = String.valueOf(min) + ":" + String.valueOf(sec) + " " + Config.SERVER_OFF_MINUTES;
+								secondMessage = String.valueOf(min) + ":" + String.valueOf(sec) + " " + Lang.SERVER_OFF_MINUTES;
 							else if (sec > 0)
-								secondMessage = String.valueOf(sec) + " " + Config.SERVER_OFF_SECONDS;
-							getServer().broadcastMessage(Config.SERVER_OFF_WHITH.replace("%%SECONDS%%", secondMessage));
+								secondMessage = String.valueOf(sec) + " " + Lang.SERVER_OFF_SECONDS;
+							getServer().broadcastMessage(Lang.SERVER_OFF_WHITH.toString().replace("%%SECONDS%%", secondMessage));
 						}
 					}, delay - (warnSecond * 1000), TimeUnit.MILLISECONDS));
 				}

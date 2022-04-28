@@ -4,7 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.tasks.AFKTask;
 
@@ -14,16 +14,18 @@ public class CReload implements CommandExecutor {
 		if (sender.isPermissionSet("scessentials.reload")) {
 			if (SCCore.getInstance().afkTask != null)
 				SCCore.getInstance().afkTask.cancel();
-			Config.loadConfig();
-			Config.loadMessages();
+			
+			SCCore.getInstance().reloadConfig();
+			Lang.loadConfiguration();
+			
 			SCCore.getInstance().checkTimedStop();
-			if (Config.AFK_KICK > 0 || Config.AFK_AUTO > 0) {
+			if (SCCore.getAutoKickTime() > 0 || SCCore.getAutoAFKDely() > 0) {
 				SCCore.getInstance().afkTask = new AFKTask();
 				SCCore.getInstance().afkTask.runTaskTimer(SCCore.getInstance(), 1000, 1000);
 			}
 			sender.sendMessage("Презагрузка SCEssentials завершена.");
 		} else {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 		}
 		return true;
 	}

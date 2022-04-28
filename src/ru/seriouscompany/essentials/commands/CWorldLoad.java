@@ -12,14 +12,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.generator.ChunkGenerator;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CWorldLoad implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.world.load")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		if (args.length >= 1 && args.length <= 2) {
@@ -66,9 +66,9 @@ public class CWorldLoad implements CommandExecutor {
 		default:
 			worldc.environment(Environment.NORMAL);
 		}
-		Bukkit.broadcastMessage(Config.WORLD_LOAD.replace("%WORLD%", name));
+		Bukkit.broadcastMessage(Lang.WORLD_LOAD.toString().replace("%WORLD%", name));
 		worldc.createWorld();
-		Bukkit.broadcastMessage(Config.WORLD_LOAD_COMPLETE.replace("%WORLD%", name));
+		Bukkit.broadcastMessage(Lang.WORLD_LOAD_COMPLETE.toString().replace("%WORLD%", name));
 	}
 
 }

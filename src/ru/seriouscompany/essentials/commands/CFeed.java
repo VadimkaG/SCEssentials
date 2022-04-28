@@ -6,14 +6,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CFeed implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.feed")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		switch (args.length) {
@@ -25,12 +25,12 @@ public class CFeed implements CommandExecutor {
 				return false;
 		case 1:
 			if (!sender.isPermissionSet("scessentials.feed.other")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
+				sender.sendMessage(Lang.PERMISSION_DENY.toString());
 				return true;
 			}
 			Player target = Bukkit.getServer().getPlayer(args[0]);
 			if (target == null) {
-				sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
+				sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString().replace("%PLAYER%", args[0]));
 				return true;
 			}
 			target.setFoodLevel(20);

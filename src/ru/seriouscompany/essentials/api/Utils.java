@@ -9,7 +9,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 import ru.seriouscompany.essentials.SCCore;
 
 public abstract class Utils {
@@ -28,14 +28,14 @@ public abstract class Utils {
 	 */
 	protected static String afkName = "AFK";
 	public static void createAfkTeam() {
-		if (Config.AFK_TEAM) {
+		if (SCCore.afkTeamEnabled()) {
 			ScoreboardManager sm = Bukkit.getScoreboardManager();
-	        Scoreboard curScoreboard = sm.getNewScoreboard();
-	        Team afkTeam = curScoreboard.getTeam(afkName);
-	        if (afkTeam == null) {
-	        	afkTeam = curScoreboard.registerNewTeam(afkName);
-	        }
-	        afkTeam.setPrefix(Config.AFK_PREFIX);
+			Scoreboard curScoreboard = sm.getNewScoreboard();
+			Team afkTeam = curScoreboard.getTeam(afkName);
+			if (afkTeam == null) {
+				afkTeam = curScoreboard.registerNewTeam(afkName);
+			}
+			afkTeam.setPrefix(Lang.AFK_PREFIX.toString());
 		}
 	}
 	/**
@@ -43,7 +43,7 @@ public abstract class Utils {
 	 * @param player - игрок
 	 */
 	public static void addPlayerToAfkTeam(Player player) {
-		if (Config.AFK_TEAM) {
+		if (SCCore.afkTeamEnabled()) {
 			for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
 				Scoreboard curScoreboard = eachPlayer.getScoreboard();
 				Team team = curScoreboard.getTeam(afkName);
@@ -52,13 +52,13 @@ public abstract class Utils {
 				}
 				eachPlayer.hidePlayer(SCCore.getInstance(), player);
 				eachPlayer.showPlayer(SCCore.getInstance(), player);
-	            
+
 				String pref = team.getPrefix();
-		        team.setPrefix(pref);
+				team.setPrefix(pref);
 				
-	        	team.addEntry(player.getDisplayName());
-	        	eachPlayer.setScoreboard(curScoreboard);
-	        }
+				team.addEntry(player.getDisplayName());
+				eachPlayer.setScoreboard(curScoreboard);
+		}
 			if (player.getDisplayName().length() < 15)
 				player.setDisplayName(ChatColor.GRAY + player.getDisplayName());
 		}
@@ -68,7 +68,7 @@ public abstract class Utils {
 	 * @param player - игрок
 	 */
 	public static void removePlayerFromAfkTeam(Player player) {
-		if (Config.AFK_TEAM) {
+		if (SCCore.afkTeamEnabled()) {
 			for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
 				Scoreboard curScoreboard = eachPlayer.getScoreboard();
 				Team team = curScoreboard.getTeam(afkName);
@@ -163,11 +163,25 @@ public abstract class Utils {
 			PlayerFlag.setPlayerFlag(player, "FREEZED", value);
 
 		if (value) {
+			PlayerFlag.setPlayerFlag(player, "OLD_FLY_SPEED", player.getFlySpeed());
+			PlayerFlag.setPlayerFlag(player, "OLD_WALK_SPEED", player.getWalkSpeed());
 			player.setFlySpeed(0);
 			player.setWalkSpeed(0);
 		} else {
-			player.setFlySpeed(Config.SPEED_DEFAULT_FLY);
-			player.setWalkSpeed(Config.SPEED_DEFAULT);
+			MetadataValue speed = PlayerFlag.getPlayerFlag(player, "OLD_FLY_SPEED");
+			if (speed == null)
+				player.setFlySpeed((float) SCCore.speedDefaultFly());
+			else {
+				player.setFlySpeed(speed.asFloat());
+				PlayerFlag.removePlayerFlag(player, "OLD_FLY_SPEED");
+			}
+			speed = PlayerFlag.getPlayerFlag(player, "OLD_WALK_SPEED");
+			if (speed == null)
+				player.setWalkSpeed((float) SCCore.speedDefaultWalk());
+			else {
+				player.setWalkSpeed(speed.asFloat());
+				PlayerFlag.removePlayerFlag(player, "OLD_WALK_SPEED");
+			}
 		}
 	}
 	/**

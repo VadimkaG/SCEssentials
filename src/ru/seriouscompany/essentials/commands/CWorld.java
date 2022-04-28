@@ -56,8 +56,8 @@ public class CWorld implements CommandExecutor {
 
 	private void printHelp(CommandSender sender, String label) {
 		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_LIST+" - Список миров");
-		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_LOAD+" <Мир> - Загрузить мир");
-		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_UNLOAD+" <Мир> <Генератор> - Отгрузить мир");
+		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_LOAD+" <Мир> <Генератор> - Загрузить мир");
+		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_UNLOAD+" <Мир> - Отгрузить мир");
 		sender.sendMessage("/"+label+" "+PREFIX_COMMAND_AUTOLOAD+" <Мир> <Генератор> - Автоматическая загрузка мира");
 	}
 

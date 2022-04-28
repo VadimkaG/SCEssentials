@@ -7,18 +7,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CTeleportWorld implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.world.teleport")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+			sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 			return true;
 		}
 		Player player = (Player) sender;
@@ -28,12 +28,12 @@ public class CTeleportWorld implements CommandExecutor {
 		// Телепортировать другого игрока в мир
 		case 2:
 			if (!sender.isPermissionSet("scessentials.world.teleport.other")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
+				sender.sendMessage(Lang.PERMISSION_DENY.toString());
 				return true;
 			}
 			player = Bukkit.getServer().getPlayer(args[1]);
 			if (player == null) {
-				sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[1]));
+				sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString().replace("%PLAYER%", args[1]));
 				return true;
 			}
 		
@@ -43,7 +43,7 @@ public class CTeleportWorld implements CommandExecutor {
 			if (world != null) {
 				player.teleport(world.getSpawnLocation());
 			} else
-				sender.sendMessage(Config.WORLD_NOT_FOUND.replace("%WORLD%", args[0]));
+				sender.sendMessage(Lang.WORLD_NOT_FOUND.toString().replace("%WORLD%", args[0]));
 			return true;
 		default: return false;
 		}

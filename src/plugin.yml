@@ -1,6 +1,6 @@
 name: SCEssentials
-version: 6.5
-api-version: 1.16
+version: 6.6
+api-version: 1.18
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
 commands:
@@ -188,6 +188,7 @@ permissions:
       scessentials.world.unload: true
       scessentials.world.load: true
       scessentials.world.autoload: true
+      scessentials.world.border: true
   scessentials.world.teleport:
     description: Дает преимущество телепортироваться между мирами
     default: false
@@ -202,6 +203,9 @@ permissions:
     default: false
   scessentials.world.load:
     description: Возможность подгружать миры
+    default: false
+  scessentials.world.border:
+    description: Установить ограничение мира
     default: false
   scessentials.world.autoload:
     description: Возможность устанавливать миры, которые автоматически загрузятся

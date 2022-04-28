@@ -7,21 +7,21 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CUndress implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.undress") ) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		if (args.length != 1)
 			return false;
 		Player target = Bukkit.getServer().getPlayer(args[0]);
 		if (target == null) {
-			sender.sendMessage(Config.PLAYER_NOT_FOUND.replace("%PLAYER%", args[0]));
+			sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString().replace("%PLAYER%", args[0]));
 			return true;
 		}
 		ItemStack item;
@@ -34,7 +34,7 @@ public class CUndress implements CommandExecutor {
 				target.getInventory().addItem(item);
 			}
 		} else {
-			sender.sendMessage(Config.UNDRESSED_FULL);
+			sender.sendMessage(Lang.UNDRESSED_FULL.toString());
 			return true;
 		}
 		
@@ -46,7 +46,7 @@ public class CUndress implements CommandExecutor {
 				target.getInventory().addItem(item);
 			}
 		} else {
-			sender.sendMessage(Config.UNDRESSED_FULL);
+			sender.sendMessage(Lang.UNDRESSED_FULL.toString());
 			return true;
 		}
 		
@@ -58,7 +58,7 @@ public class CUndress implements CommandExecutor {
 				target.getInventory().addItem(item);
 			}
 		} else {
-			sender.sendMessage(Config.UNDRESSED_FULL);
+			sender.sendMessage(Lang.UNDRESSED_FULL.toString());
 			return true;
 		}
 		
@@ -70,7 +70,7 @@ public class CUndress implements CommandExecutor {
 				target.getInventory().addItem(item);
 			}
 		} else {
-			sender.sendMessage(Config.UNDRESSED_FULL);
+			sender.sendMessage(Lang.UNDRESSED_FULL.toString());
 			return true;
 		}
 		
@@ -82,12 +82,12 @@ public class CUndress implements CommandExecutor {
 				target.getInventory().addItem(item);
 			}
 		} else {
-			sender.sendMessage(Config.UNDRESSED_FULL);
+			sender.sendMessage(Lang.UNDRESSED_FULL.toString());
 			return true;
 		}
 		
-		sender.sendMessage(Config.UNDRESSED);
-		target.sendMessage(Config.UNDRESSED_TARGET
+		sender.sendMessage(Lang.UNDRESSED.toString());
+		target.sendMessage(Lang.UNDRESSED_TARGET.toString()
 				.replaceAll("%PLAYER%", sender.getName())
 			);
 		

@@ -8,7 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
+import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.Utils;
 
 public class AFKTask extends BukkitRunnable {
@@ -20,12 +21,14 @@ public class AFKTask extends BukkitRunnable {
 			List<MetadataValue> metavalue = player.getMetadata("lastActive");
 			if (metavalue.size() > 0) {
 				long not_active = ((System.currentTimeMillis() - metavalue.get(0).asLong())/1000)/60;
+				long auto_afk_dely = SCCore.getAutoAFKDely();
 				if (Utils.isPlayerAFK(player)) {
-					if (Config.AFK_KICK > 0 && not_active >= Config.AFK_KICK)
-						player.kickPlayer(Config.AFK_KICK_REASON.replace("%TIME%", String.valueOf(Config.AFK_KICK)));
-				} else if (Config.AFK_AUTO > 0 && not_active >= Config.AFK_AUTO && !Utils.isPlayerFreezed(player)) {
+					long auto_kick = SCCore.getAutoKickTime();
+					if (auto_kick > 0 && not_active >= auto_kick)
+						player.kickPlayer(Lang.AFK_KICK_REASON.toString().replace("%TIME%", String.valueOf(auto_kick)));
+				} else if (auto_afk_dely > 0 && not_active >= auto_afk_dely && !Utils.isPlayerFreezed(player)) {
 					Utils.setPlayerAFK(player, true);
-					Bukkit.broadcastMessage(Config.AFK_ON.replace("%PLAYER%", player.getName()));
+					Bukkit.broadcastMessage(Lang.AFK_ON.toString().replace("%PLAYER%", player.getName()));
 				}
 			}
 		}

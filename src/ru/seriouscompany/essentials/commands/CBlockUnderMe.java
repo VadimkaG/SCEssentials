@@ -6,19 +6,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CBlockUnderMe implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.blockunderme")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+			sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 			return true;
 		}
 		

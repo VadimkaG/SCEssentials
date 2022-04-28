@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 import ru.seriouscompany.essentials.api.PlayerFlag;
 
 public class CRequestAccept implements CommandExecutor {
@@ -24,7 +24,7 @@ public class CRequestAccept implements CommandExecutor {
 				sender.sendMessage("Вам нечего принимать");
 			}
 		} else {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+			sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 			return true;
 		}
 		return false;

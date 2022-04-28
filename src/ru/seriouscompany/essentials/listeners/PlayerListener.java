@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.PlayerFlag;
 import ru.seriouscompany.essentials.api.Utils;
@@ -31,13 +31,12 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onExit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
-		if (Utils.isPlayerAFK(player)) {
+		if (Utils.isPlayerAFK(player))
 			Utils.setPlayerAFK(player, false);
-		}
 		if (Utils.isPlayerFreezed(player))
 			Utils.setPlayerFREEZE(player, false);
 		if (
-				Config.KILL_COMBAT_LEAVER
+				SCCore.combatKickerEnabled()
 				&&
 				PlayerFlag.getPlayerFlag(player, "IN_COMBAT").asBoolean()
 				&& 
@@ -51,7 +50,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		Player player = e.getPlayer();
-		if (Config.AFK_TEAM) Utils.removePlayerFromAfkTeam(player);
+		if (SCCore.afkTeamEnabled()) Utils.removePlayerFromAfkTeam(player);
 		PlayerFlag.setPlayerFlag(player, "PASSIVE_MODE", false);
 		PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
 	}
@@ -80,8 +79,8 @@ public class PlayerListener implements Listener {
 		else
 			PlayerFlag.setPlayerFlag(e.getPlayer(), "lastActive", System.currentTimeMillis());
 		
-		if(Config.COMBAT_MESSAGES && PlayerFlag.getPlayerFlag(player, "IN_COMBAT").asBoolean())
-			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.COMBAT_IN_YOU));
+		if(SCCore.combatMessagesEnabled() && PlayerFlag.getPlayerFlag(player, "IN_COMBAT").asBoolean())
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Lang.COMBAT_IN_YOU.toString()));
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -180,15 +179,18 @@ public class PlayerListener implements Listener {
 			final Player player = (Player) e.getEntity();
 			PlayerFlag.setPlayerFlag(player, "IN_COMBAT", true);
 			
-			if (Config.COMBAT_MESSAGES)
-				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.COMBAT_IN_YOU));
+			boolean combatMessages = SCCore.combatMessagesEnabled();
 			
-			if (Config.COMBAT_TIME > 0) {
+			if (combatMessages)
+				player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Lang.COMBAT_IN_YOU.toString()));
+			
+			long combatTime = SCCore.combatTime();
+			
+			if (combatTime > 0)
 				Bukkit.getScheduler().runTaskLater(SCCore.getInstance(), () -> {
 					PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
-					if (Config.COMBAT_MESSAGES) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Config.COMBAT_OUT_YOU));
-				}, 20L * Config.COMBAT_TIME);
-			}
+					if (combatMessages) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Lang.COMBAT_OUT_YOU.toString()));
+				}, 20L * combatTime);
 		}
 	}
 }

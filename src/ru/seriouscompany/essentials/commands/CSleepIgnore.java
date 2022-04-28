@@ -5,27 +5,27 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
 
 public class CSleepIgnore implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String str, String[] strs) {
 		if (!sender.isPermissionSet("scessentials.sleepignore")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (player.isSleepingIgnored()) {
 				player.setSleepingIgnored(false);
-				player.sendMessage(Config.SLEEP_ON);
+				player.sendMessage(Lang.SLEEP_ON.toString());
 			} else {
 				player.setSleepingIgnored(true);
-				player.sendMessage(Config.SLEEP_OFF);
+				player.sendMessage(Lang.SLEEP_OFF.toString());
 			}
 		} else {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+			sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 		}
 		return true;
 	}

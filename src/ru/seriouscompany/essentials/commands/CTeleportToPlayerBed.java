@@ -7,18 +7,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import ru.seriouscompany.essentials.Config;
+import ru.seriouscompany.essentials.Lang;
+import ru.seriouscompany.essentials.SCCore;
 
 public class CTeleportToPlayerBed implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!sender.isPermissionSet("scessentials.teleport.tobed")) {
-			sender.sendMessage(Config.PERMISSION_DENY);
+			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(Config.COMMAND_FOR_PLAYERS);
+			sender.sendMessage(Lang.COMMAND_FOR_PLAYERS.toString());
 			return true;
 		}
 		
@@ -28,25 +29,25 @@ public class CTeleportToPlayerBed implements CommandExecutor {
 		switch (args.length) {
 		case 1:
 			if (!sender.isPermissionSet("scessentials.teleport.tobed.other")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
+				sender.sendMessage(Lang.PERMISSION_DENY.toString());
 				return true;
 			}
 			Player target = Bukkit.getPlayer(args[0]);
 			if (target == null) {
-				sender.sendMessage(Config.PLAYER_NOT_FOUND
+				sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString()
 						.replaceAll("%PLAYER%", args[0])
 					);
 				return true;
 			}
 			
-			if (Config.allowTeleportImmunity && target.isPermissionSet("scessentials.teleport.immunity")) {
-				sender.sendMessage(Config.PERMISSION_DENY);
+			if (SCCore.teleportImmunityAllow() && target.isPermissionSet("scessentials.teleport.immunity")) {
+				sender.sendMessage(Lang.PERMISSION_DENY.toString());
 				return true;
 			}
 			
 			loc = target.getBedSpawnLocation();
 			if (loc == null) {
-				sender.sendMessage(Config.PLAYER_BED_NOT_FOUND
+				sender.sendMessage(Lang.PLAYER_BED_NOT_FOUND.toString()
 						.replaceAll("%PLAYER%", target.getName())
 					);
 				return true;
@@ -56,7 +57,7 @@ public class CTeleportToPlayerBed implements CommandExecutor {
 		case 0:
 			loc = player.getBedSpawnLocation();
 			if (loc == null) {
-				sender.sendMessage(Config.PLAYER_BED_NOT_FOUND
+				sender.sendMessage(Lang.PLAYER_BED_NOT_FOUND.toString()
 						.replaceAll("%PLAYER%", player.getName())
 					);
 				return true;
