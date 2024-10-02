@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import ru.seriouscompany.essentials.Lang;
 import ru.seriouscompany.essentials.api.PlayerFlag;
@@ -20,6 +21,9 @@ public class CRequestAccept implements CommandExecutor {
 				if (obj.value() instanceof Runnable)
 					((Runnable)obj.value()).run();
 				PlayerFlag.removePlayerFlag(player, "PLAYER_REQUEST");
+				BukkitRunnable runnable = (BukkitRunnable)PlayerFlag.getPlayerFlag(player, "PLAYER_REQUEST_TASK").value();
+				runnable.cancel();
+				PlayerFlag.removePlayerFlag(player, "PLAYER_REQUEST_TASK");
 			} else {
 				sender.sendMessage("Вам нечего принимать");
 			}

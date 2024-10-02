@@ -105,7 +105,7 @@ public enum Lang {
 		return message;
 	}
 	/**
-	 * Сохранить в файл конфигурацию по умолчанию
+	 * Загрузить конфигурацию
 	 */
 	public static void loadConfiguration() {
 		

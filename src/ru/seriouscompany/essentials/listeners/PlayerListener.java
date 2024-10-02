@@ -1,6 +1,9 @@
 package ru.seriouscompany.essentials.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -18,6 +21,9 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.metadata.MetadataValue;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -45,6 +51,18 @@ public class PlayerListener implements Listener {
 			player.setHealth(0);
 		}
 		e.getPlayer().setSleepingIgnored(false);
+		
+		if (PlayerFlag.isSetPlayerFlag(player, "OLD_FLY_SPEED")) {
+			MetadataValue flag = PlayerFlag.getPlayerFlag(player, "OLD_FLY_SPEED");
+			if (flag != null)
+				player.setFlySpeed(flag.asFloat());
+		}
+		
+		if (PlayerFlag.isSetPlayerFlag(player, "OLD_WALK_SPEED")) {
+			MetadataValue flag = PlayerFlag.getPlayerFlag(player, "OLD_WALK_SPEED");
+			if (flag != null)
+				player.setWalkSpeed(flag.asFloat());
+		}
 	}
 	
 	@EventHandler
@@ -191,6 +209,52 @@ public class PlayerListener implements Listener {
 					PlayerFlag.setPlayerFlag(player, "IN_COMBAT", false);
 					if (combatMessages) player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Lang.COMBAT_OUT_YOU.toString()));
 				}, 20L * combatTime);
+		}
+	}
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent e) {
+		
+		// Нельзя телепортироваться в блок!
+		if (e.getCause().equals(TeleportCause.ENDER_PEARL) && SCCore.disallowPearlTeleportIntoBlock()) {
+			Block block = e.getTo().getBlock();
+			if (block != null) {
+				
+				// Если это не прозрачный блок, то просто отменяем телепорт
+				if (!block.getType().equals(Material.AIR) && block.getType().isSolid())
+					e.setCancelled(true);
+				
+				// Если это прозрачный блок, то вычисляем препятствия вокруг и корректируем телепорт
+				else {
+					
+					// Проверяем по координате x
+					Location loc = e.getTo().clone();
+					double x = e.getTo().getX()-e.getTo().getBlockX();
+					if (x > 0.7) {
+						loc = loc.add(1, 1, 0);
+					} else if (x < 0.3) {
+						loc = loc.add(-1, 1, 0);
+					}
+					block = loc.getBlock();
+					if (!block.getType().equals(Material.AIR) && block.getType().isSolid()) {
+						e.setTo(new Location(e.getTo().getWorld(), e.getTo().getBlockX()+0.5, e.getTo().getBlockY(), e.getTo().getBlockZ()+0.5,e.getTo().getYaw(), e.getTo().getPitch()));
+						return;
+					}
+
+					// Проверяем по координате z
+					loc = e.getTo().clone();
+					x = e.getTo().getZ()-e.getTo().getBlockZ();
+					if (x > 0.7) {
+						loc = loc.add(0, 1, 1);
+					} else if (x < 0.3) {
+						loc = loc.add(0, 1, -1);
+					}
+					block = loc.getBlock();
+					if (!block.getType().equals(Material.AIR) && block.getType().isSolid()) {
+						e.setTo(new Location(e.getTo().getWorld(), e.getTo().getBlockX()+0.5, e.getTo().getBlockY(), e.getTo().getBlockZ()+0.5,e.getTo().getYaw(), e.getTo().getPitch()));
+						return;
+					}
+				}
+			}
 		}
 	}
 }

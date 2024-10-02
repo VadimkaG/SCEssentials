@@ -199,6 +199,10 @@ public abstract class Utils {
 	 * @param delay   - Время, после которого запрос будет отменен
 	 */
 	public static void requset(Player player, Runnable action, long delay) {
+		if (PlayerFlag.hasPlayerFlag(player, "PLAYER_REQUEST_TASK")) {
+			BukkitRunnable runnable = (BukkitRunnable)PlayerFlag.getPlayerFlag(player, "PLAYER_REQUEST_TASK").value();
+			runnable.cancel();
+		}
 		PlayerFlag.setPlayerFlag(player, "PLAYER_REQUEST", action);
 		BukkitRunnable task = new BukkitRunnable() {
 			@Override
@@ -207,5 +211,6 @@ public abstract class Utils {
 			}
 		};
 		task.runTaskLater(SCCore.getInstance(), delay);
+		PlayerFlag.setPlayerFlag(player, "PLAYER_REQUEST_TASK", task);
 	}
 }

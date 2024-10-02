@@ -28,6 +28,7 @@ import ru.seriouscompany.essentials.api.PlayerFlag;
 import ru.seriouscompany.essentials.commands.CAFK;
 import ru.seriouscompany.essentials.commands.CBlockUnderMe;
 import ru.seriouscompany.essentials.commands.CFeed;
+import ru.seriouscompany.essentials.commands.CFixSpeed;
 import ru.seriouscompany.essentials.commands.CFly;
 import ru.seriouscompany.essentials.commands.CFreeze;
 import ru.seriouscompany.essentials.commands.CHeal;
@@ -98,7 +99,6 @@ public class SCCore extends JavaPlugin {
 		
 		Map<String, String> worlds = getWorldList();
 		for (Entry<String, String> world : worlds.entrySet()) {
-			//getLogger().info("Мир: "+world.getKey()+" - "+world.getValue());
 			CWorldLoad.loadWorld(world.getKey(), world.getValue());
 		}
 		
@@ -136,6 +136,7 @@ public class SCCore extends JavaPlugin {
 		getCommand("undress").setTabCompleter(new TCPlayerArgument());
 		getCommand("passive").setExecutor(new CPassiveModeToggle());
 		getCommand("bunder").setExecutor(new CBlockUnderMe());
+		getCommand("fixspeed").setExecutor(new CFixSpeed());
 		
 		checkTimedStop();
 		
@@ -273,6 +274,13 @@ public class SCCore extends JavaPlugin {
 	 */
 	public static boolean teleportImmunityAllow() {
 		return INSTANCE.getConfig().getBoolean("teleport.allowImmunity");
+	}
+	/**
+	 * Запретить телепортироваться в нутрь блоков с помощью эндер-жемчугов
+	 * @return
+	 */
+	public static boolean disallowPearlTeleportIntoBlock() {
+		return INSTANCE.getConfig().getBoolean("disallowPearlTeleportIntoBlock", true);
 	}
 	@SuppressWarnings("unchecked")
 	public static List<Integer> getTimeStopedWarns() {

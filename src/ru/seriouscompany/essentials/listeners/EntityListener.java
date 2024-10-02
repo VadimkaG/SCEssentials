@@ -9,12 +9,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 import ru.seriouscompany.essentials.api.Utils;
 
@@ -36,6 +37,13 @@ public class EntityListener implements Listener {
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	public void onConsumeItem(PlayerItemConsumeEvent e) {
+		if (Utils.isPlayerFreezed(e.getPlayer())) {
+			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onAttack(EntityDamageByEntityEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
 			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
@@ -49,7 +57,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onTarget(EntityTargetEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
+			Player player = (Player)e.getEntity();
 			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setTarget(null);
 				e.setCancelled(true);
@@ -60,7 +68,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onFoodLevelChange(FoodLevelChangeEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
+			Player player = (Player)e.getEntity();
 			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}
@@ -69,7 +77,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onRegainHealth(EntityRegainHealthEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
+			Player player = (Player)e.getEntity();
 			if (player != null && Utils.isPlayerFreezed(player)) {
 				e.setAmount(0);
 				e.setCancelled(true);
@@ -78,12 +86,10 @@ public class EntityListener implements Listener {
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-	public void onInteract(EntityInteractEvent e) {
-		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
-			if (player != null && Utils.isPlayerFreezed(player))
-				e.setCancelled(true);
-		}
+	public void onInteract(PlayerInteractEvent e) {
+		Player player = e.getPlayer();
+		if (player != null && Utils.isPlayerFreezed(player))
+			e.setCancelled(true);
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -101,7 +107,7 @@ public class EntityListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
 	public void onShoot(EntityShootBowEvent e) {
 		if (e.getEntityType() == EntityType.PLAYER) {
-			Player player = Bukkit.getServer().getPlayer(e.getEntity().getName());
+			Player player = (Player)e.getEntity();
 			if (player != null && Utils.isPlayerFreezed(player))
 				e.setCancelled(true);
 		}

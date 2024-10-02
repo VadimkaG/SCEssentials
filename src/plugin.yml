@@ -1,5 +1,5 @@
 name: SCEssentials
-version: 6.6
+version: 6.7
 api-version: 1.18
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
@@ -67,6 +67,9 @@ commands:
   bunder:
     description: Стави т блок под вами
     user: /<command>
+  fixspeed:
+    description: Починить скорость игроку
+    usage: /<command> <Player>
 permissions:
   scessentials.*:
     description: Все преимущества плагина
@@ -95,7 +98,7 @@ permissions:
     default: true
   scessentials.afk:
     description: Дает возможность отлучиться от компьютера
-    default: true
+    default: false
   scessentials.combat:
     description: Дает возможность выходить из игры во время боя
     default: false
