@@ -90,7 +90,11 @@ public enum Lang {
 	FREEZED("stats.freezed","Заморожен"),
 	FLYING("stats.flying","Летает"),
 	COMBAT_IN("stats.combat","В бою"),
-	PASSIVEMODE_STAT("stats.passivemode","Пассивный");
+	PASSIVEMODE_STAT("stats.passivemode","Пассивный"),
+	
+	ANTIDOS_FULL("antidos.fulled","Очередь на сервер переполнена. Вход временно ограничен. Приходите позже."),
+	ANTIDOS_SLOWMODE("antidos.slowmode","Активен медленный режим. Пропускает одного игрока в секунду. Пожалуйста проявите терпение и не пытайтесь заходить слишком часто."),
+	ANTIDOS_TEMPBAN("antidos.tempban","Слишком быстрый перезаход в игру. Подождите %SECONDS% секунд.");
 	
 	String configAlias;
 	String message;

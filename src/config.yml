@@ -35,3 +35,6 @@ Timedstop:
   Delyhour: 1
   # Предупреждения перед автоматическим выключением сервера
   Warnings: []
+# Система защиты от dos-атак
+antidos:
+  enabled: true

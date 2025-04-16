@@ -46,8 +46,10 @@ import ru.seriouscompany.essentials.commands.CTeleportToPlayer;
 import ru.seriouscompany.essentials.commands.CTeleportToPlayerBed;
 import ru.seriouscompany.essentials.commands.CTeleportWorld;
 import ru.seriouscompany.essentials.commands.CUndress;
+import ru.seriouscompany.essentials.commands.CVanish;
 import ru.seriouscompany.essentials.commands.CWorld;
 import ru.seriouscompany.essentials.commands.CWorldLoad;
+import ru.seriouscompany.essentials.listeners.AntiDOSListener;
 import ru.seriouscompany.essentials.listeners.BlockListener;
 import ru.seriouscompany.essentials.listeners.EntityListener;
 import ru.seriouscompany.essentials.listeners.PlayerListener;
@@ -94,6 +96,8 @@ public class SCCore extends JavaPlugin {
 		
 		getConfig().addDefault("Timedstop.Warnings", new ArrayList<Integer>());
 		
+		getConfig().addDefault("antidos.enabled", true);
+		
 		saveDefaultConfig();
 		Lang.loadConfiguration();
 		
@@ -101,6 +105,9 @@ public class SCCore extends JavaPlugin {
 		for (Entry<String, String> world : worlds.entrySet()) {
 			CWorldLoad.loadWorld(world.getKey(), world.getValue());
 		}
+		
+		if (getConfig().getBoolean("antidos.enabled", true))
+			getServer().getPluginManager().registerEvents(new AntiDOSListener(), this);
 		
 		getServer().getPluginManager().registerEvents(new BlockListener(), this);
 		getServer().getPluginManager().registerEvents(new EntityListener(), this);
@@ -137,6 +144,7 @@ public class SCCore extends JavaPlugin {
 		getCommand("passive").setExecutor(new CPassiveModeToggle());
 		getCommand("bunder").setExecutor(new CBlockUnderMe());
 		getCommand("fixspeed").setExecutor(new CFixSpeed());
+		getCommand("vanish").setExecutor(new CVanish());
 		
 		checkTimedStop();
 		

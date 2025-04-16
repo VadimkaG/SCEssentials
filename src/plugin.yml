@@ -1,6 +1,6 @@
 name: SCEssentials
-version: 6.7
-api-version: 1.18
+version: 6.9
+api-version: 1.21
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
 commands:
@@ -70,6 +70,9 @@ commands:
   fixspeed:
     description: Починить скорость игроку
     usage: /<command> <Player>
+  vanish:
+    description: Скрыть себя от других игроков
+    usage: /<command>
 permissions:
   scessentials.*:
     description: Все преимущества плагина
@@ -93,6 +96,7 @@ permissions:
       scessentials.undress: true
       scessentials.passivemode: true
       scessentials.blockunderme: true
+      scessentials.vanish: true
   scessentials.suicide:
     description: Дает преимущества суицида
     default: true
@@ -218,5 +222,8 @@ permissions:
     default: false
   scessentials.blockunderme:
     description: Возможность поставить блок под собой
+    default: false
+  scessentials.vanish:
+    description: Возможность скрыть себя от других игроков
     default: false
 
