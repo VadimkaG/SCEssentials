@@ -123,17 +123,16 @@ public enum Lang {
 					value.message = Utils.replaceColorCodes(config.getString(value.configAlias));
 			}
 		} else if (!f.exists()) {
-			if (!f.getParentFile().exists() && f.getParentFile().getParentFile().canWrite()) {
+			if (!f.getParentFile().exists() && f.getParentFile().getParentFile().canWrite())
 				f.getParentFile().mkdir();
-				config = new YamlConfiguration();
-				for (Lang value: Lang.values()) {
-					config.set(value.configAlias, value.message);
-				}
-				try {
-					config.save(f);
-				} catch (IOException e) {
-					SCCore.getInstance().getLogger().log(Level.WARNING,"Не удалось сохранить файл переводов",e);
-				}
+			config = new YamlConfiguration();
+			for (Lang value: Lang.values()) {
+				config.set(value.configAlias, value.message);
+			}
+			try {
+				config.save(f);
+			} catch (IOException e) {
+				SCCore.getInstance().getLogger().log(Level.WARNING,"Не удалось сохранить файл переводов",e);
 			}
 		}
 	}

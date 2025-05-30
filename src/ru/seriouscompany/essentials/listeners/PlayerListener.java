@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,12 +33,28 @@ import org.bukkit.plugin.Plugin;
 import ru.seriouscompany.essentials.SCCore;
 import ru.seriouscompany.essentials.api.PlayerFlag;
 import ru.seriouscompany.essentials.api.Utils;
+import ru.seriouscompany.essentials.commands.CVanish;
 
 public class PlayerListener implements Listener {
 	
 	// Скрытиые игроки
 	public static List<Player> vanishedPlayers = new ArrayList<>();
-	
+
+	/**
+	 * Получить конфиг сохранения данных игрока, если есть
+	 * @param player
+	 * @return
+	 */
+	public static YamlConfiguration getPlayerStateConfig(Player player) {
+		if (player.hasMetadata("PlayerStateConfig")) {
+			List<MetadataValue> metadata = player.getMetadata("PlayerStateConfig");
+			for (MetadataValue value : metadata) {
+				if (value.value() instanceof YamlConfiguration)
+					return (YamlConfiguration)value.value();
+			}
+		}
+		return null;
+	}
 	@EventHandler
 	public void onExit(PlayerQuitEvent e) {
 		Player player = e.getPlayer();
@@ -82,8 +99,18 @@ public class PlayerListener implements Listener {
 		Plugin pl = SCCore.getInstance();
 		
 		// Скрыть игрока
+		if (!player.isOp())
 		for (Player target : vanishedPlayers) {
-			player.hidePlayer(pl, target);
+			if (player != target)
+				player.hidePlayer(pl, target);
+		}
+		
+		YamlConfiguration config = getPlayerStateConfig(player);
+		if (config != null && config.getBoolean(SCCore.METADATA_VANISHED,false)) {
+			if (player.isPermissionSet("scessentials.vanish")) {
+				CVanish.enableVanish(player);
+			} else
+				config.set(SCCore.METADATA_VANISHED, null);
 		}
 	}
 	

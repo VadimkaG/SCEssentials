@@ -4,7 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValueAdapter;
 import org.bukkit.plugin.Plugin;
 
 import ru.seriouscompany.essentials.SCCore;
@@ -20,20 +22,48 @@ public class CVanish implements CommandExecutor {
 			return true;
 		Player target = (Player)sender;
 		Plugin pl = SCCore.getInstance();
-		if (PlayerListener.vanishedPlayers.contains(target)) {
-			PlayerListener.vanishedPlayers.remove(target);
+
+		YamlConfiguration config = PlayerListener.getPlayerStateConfig(target);
+		if (target.hasMetadata(SCCore.METADATA_VANISHED)) {
+			if (target.hasMetadata(SCCore.METADATA_VANISHED))
+				target.removeMetadata(SCCore.METADATA_VANISHED, pl);
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				player.showPlayer(pl,target);
 			}
+			if (config != null)
+				config.set(SCCore.METADATA_VANISHED, false);
 			sender.sendMessage("Вы показались");
 		} else {
-			PlayerListener.vanishedPlayers.add(target);
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				player.hidePlayer(pl, target);
-			}
+			enableVanish(target);
+			if (config != null)
+				config.set(SCCore.METADATA_VANISHED, true);
 			sender.sendMessage("Вы скрылись");
 		}
 		return true;
+	}
+	/**
+	 * Включить ваниш для игрока
+	 * @param target
+	 */
+	public static void enableVanish(Player target) {
+		Plugin pl = SCCore.getInstance();
+		PlayerListener.vanishedPlayers.add(target);
+		target.setMetadata(SCCore.METADATA_VANISHED, new MetadataValueAdapter(pl) {
+			@Override
+			public boolean asBoolean() {
+				return true;
+			}
+			@Override
+			public Object value() {
+				return true;
+			}
+			@Override
+			public void invalidate() {}
+		});
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			if (!player.isOp() && player != target)
+				player.hidePlayer(pl, target);
+		}
 	}
 
 }

@@ -45,7 +45,7 @@ public class CTeleportToPlayerBed implements CommandExecutor {
 				return true;
 			}
 			
-			loc = target.getBedSpawnLocation();
+			loc = target.getRespawnLocation();
 			if (loc == null) {
 				sender.sendMessage(Lang.PLAYER_BED_NOT_FOUND.toString()
 						.replaceAll("%PLAYER%", target.getName())
@@ -55,7 +55,7 @@ public class CTeleportToPlayerBed implements CommandExecutor {
 			player.teleport(loc);
 			return true;
 		case 0:
-			loc = player.getBedSpawnLocation();
+			loc = player.getRespawnLocation();
 			if (loc == null) {
 				sender.sendMessage(Lang.PLAYER_BED_NOT_FOUND.toString()
 						.replaceAll("%PLAYER%", player.getName())

@@ -60,6 +60,8 @@ import ru.seriouscompany.essentials.tasks.AFKTask;
 
 public class SCCore extends JavaPlugin {
 	
+	public static final String METADATA_VANISHED = "Vanished";
+	
 	private static SCCore INSTANCE = null;
 	public AFKTask afkTask;
 	
