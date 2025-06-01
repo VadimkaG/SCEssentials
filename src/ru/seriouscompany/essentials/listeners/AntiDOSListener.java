@@ -8,9 +8,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 
+import ru.seriouscompany.essentials.Config;
 import ru.seriouscompany.essentials.Lang;
 
 public class AntiDOSListener implements Listener {
+	
+	protected Config config;
 	
 	public static final long BAN_STANDART = 15000;
 	public static final long BAN_SLOW = 180000;
@@ -30,7 +33,8 @@ public class AntiDOSListener implements Listener {
 	// Последний этап обороны. Полная блокировка входа на сервер
 	boolean disableJoin;
 	
-	public AntiDOSListener() {
+	public AntiDOSListener(Config config) {
+		this.config = config;
 		banTimeouts = new HashMap<>();
 		playerCounter = 0;
 		emergencyTimeout = 0;
@@ -73,6 +77,22 @@ public class AntiDOSListener implements Listener {
 				return;
 			} else
 				banTimeouts.remove(addres);
+		}
+		
+		// Кикаем неподходящие никнеймы
+		String disallowedNamePrefix = config.getDisallowedNamePrefix();
+		if (disallowedNamePrefix != null) {
+			String playerName = e.getName();
+			int nameLen = disallowedNamePrefix.length();
+			if (playerName.length() >= nameLen && playerName.substring(0,nameLen).equalsIgnoreCase(disallowedNamePrefix)) {
+				e.disallow(
+					Result.KICK_OTHER,
+					"У вас не подходящий ник. Нельзя использовать \""+disallowedNamePrefix+"\" в начале ника."+
+					"\nЕсли в вашем лаунчере нет возможности смены ника, то используйте модификации."+
+					"\nНапример \"in-game account switcher\"."
+				);
+				return;
+			}
 		}
 
 		// Стандартный режим
@@ -124,13 +144,6 @@ public class AntiDOSListener implements Listener {
 					return;
 				}
 			}
-		}
-		
-		// Кикаем пиратки с рандомными никами
-		String playerName = e.getName();
-		if (playerName.length() >= 6 && playerName.substring(0,6).equalsIgnoreCase("player")) {
-			e.disallow(Result.KICK_OTHER, "У вас не подходящий ник. Если вы с пиратской версии QuestCraft, то вам необходимо использовать лицензию.");
-			return;
 		}
 		
 		// Добавляем в банлист

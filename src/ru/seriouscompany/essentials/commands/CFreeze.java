@@ -5,11 +5,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import ru.seriouscompany.essentials.Lang;
-import ru.seriouscompany.essentials.api.Utils;
+import ru.seriouscompany.essentials.meta.FreezeMeta;
 
 public class CFreeze implements CommandExecutor {
+	
+	protected Plugin plugin;
+	
+	public CFreeze(Plugin plugin) {
+		this.plugin = plugin;
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
@@ -19,13 +26,14 @@ public class CFreeze implements CommandExecutor {
 		}
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
-			if (Utils.isPlayerFreezed(player)) {
+			if (FreezeMeta.isFreezed(player)) {
 				sender.sendMessage(Lang.YOU_FREEZED.toString());
 				return true;
 			}
 		}
 		if (args.length == 1) {
 			Player target = Bukkit.getServer().getPlayer(args[0]);
+			FreezeMeta meta = FreezeMeta.from(target,plugin);
 			if (target == null) {
 				sender.sendMessage(Lang.PLAYER_NOT_FOUND.toString().replace("%PLAYER%", args[0]));
 				return true;
@@ -34,13 +42,13 @@ public class CFreeze implements CommandExecutor {
 				sender.sendMessage(Lang.FREEZE_SELF.toString());
 				return true;
 			}
-			if (Utils.isPlayerFreezed(target)) {
-				Utils.setPlayerFREEZE(target, false);
+			if (meta.asBoolean()) {
+				meta.set(false);
 				if (sender != target)
 					sender.sendMessage(Lang.FREEZE_OFF.toString().replace("%PLAYER%", target.getName()));
 				target.sendMessage(Lang.FREEZE_OFF_TARGET.toString().replace("%PLAYER%", sender.getName()));
 			} else {
-				Utils.setPlayerFREEZE(target, true);
+				meta.set(true);
 				if (sender != target)
 					sender.sendMessage(Lang.FREEZE_ON.toString().replace("%PLAYER%", target.getName()));
 				target.sendMessage(Lang.FREEZE_ON_TARGET.toString().replace("%PLAYER%", sender.getName()));

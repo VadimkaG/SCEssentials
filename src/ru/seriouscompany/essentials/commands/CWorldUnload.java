@@ -11,7 +11,7 @@ public class CWorldUnload implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!sender.isPermissionSet("scessentials.world.unload")) {
+		if (!sender.isPermissionSet("scessentials.world.manage")) {
 			sender.sendMessage(Lang.PERMISSION_DENY.toString());
 			return true;
 		}

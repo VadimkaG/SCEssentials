@@ -4,26 +4,26 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.Plugin;
 
 import ru.seriouscompany.essentials.Lang;
-import ru.seriouscompany.essentials.api.PlayerFlag;
+import ru.seriouscompany.essentials.meta.RequestMeta;
 
 public class CRequestAccept implements CommandExecutor {
+	
+	protected Plugin plugin;
+	
+	public CRequestAccept(Plugin plugin) {
+		this.plugin = plugin;
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player)sender;
-			if (PlayerFlag.hasPlayerFlag(player, "PLAYER_REQUEST")) {
-				MetadataValue obj = PlayerFlag.getPlayerFlag(player, "PLAYER_REQUEST");
-				if (obj.value() instanceof Runnable)
-					((Runnable)obj.value()).run();
-				PlayerFlag.removePlayerFlag(player, "PLAYER_REQUEST");
-				BukkitRunnable runnable = (BukkitRunnable)PlayerFlag.getPlayerFlag(player, "PLAYER_REQUEST_TASK").value();
-				runnable.cancel();
-				PlayerFlag.removePlayerFlag(player, "PLAYER_REQUEST_TASK");
+			RequestMeta meta = RequestMeta.from(player,plugin);
+			if (meta.has()) {
+				meta.run();
 			} else {
 				sender.sendMessage("Вам нечего принимать");
 			}

@@ -7,8 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import ru.seriouscompany.essentials.Lang;
-import ru.seriouscompany.essentials.api.PlayerFlag;
-import ru.seriouscompany.essentials.api.Utils;
+import ru.seriouscompany.essentials.meta.CombatStateMeta;
+import ru.seriouscompany.essentials.meta.FreezeMeta;
+import ru.seriouscompany.essentials.meta.PassiveModeMeta;
 
 public class CPlayerInfo implements CommandExecutor {
 
@@ -49,13 +50,7 @@ public class CPlayerInfo implements CommandExecutor {
 			message += Lang.NO;
 		
 		message += "\n"+Lang.FREEZED+": ";
-		if (Utils.isPlayerFreezed(target))
-			message += Lang.YES;
-		else
-			message += Lang.NO;
-		
-		message += "\nAFK: ";
-		if (Utils.isPlayerAFK(target))
+		if (FreezeMeta.isFreezed(target))
 			message += Lang.YES;
 		else
 			message += Lang.NO;
@@ -67,13 +62,14 @@ public class CPlayerInfo implements CommandExecutor {
 			message += Lang.NO;
 		
 		message += "\n"+Lang.COMBAT_IN+": ";
-		if (PlayerFlag.getPlayerFlag(target, "IN_COMBAT").asBoolean())
+		if (CombatStateMeta.inCombat(target))
 			message += Lang.YES;
 		else
 			message += Lang.NO;
 		
 		message += "\n"+Lang.PASSIVEMODE_STAT+": ";
-		if (PlayerFlag.getPlayerFlag(target, "PASSIVE_MODE").asBoolean())
+		
+		if (PassiveModeMeta.isModeEnabled(target))
 			message += Lang.YES;
 		else
 			message += Lang.NO;

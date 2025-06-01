@@ -7,10 +7,16 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import ru.seriouscompany.essentials.Config;
 import ru.seriouscompany.essentials.Lang;
-import ru.seriouscompany.essentials.SCCore;
 
 public class CTeleportToPlayerBed implements CommandExecutor {
+	
+	protected Config config;
+	
+	public CTeleportToPlayerBed(Config config) {
+		this.config = config;
+	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -40,7 +46,7 @@ public class CTeleportToPlayerBed implements CommandExecutor {
 				return true;
 			}
 			
-			if (SCCore.teleportImmunityAllow() && target.isPermissionSet("scessentials.teleport.immunity")) {
+			if (config.isTeleportImmunityEnabled() && target.isPermissionSet("scessentials.teleport.immunity")) {
 				sender.sendMessage(Lang.PERMISSION_DENY.toString());
 				return true;
 			}

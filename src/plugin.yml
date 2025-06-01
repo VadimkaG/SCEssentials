@@ -1,17 +1,14 @@
 name: SCEssentials
-version: 6.9.3
+version: 7.0
 api-version: 1.21
 main: ru.seriouscompany.essentials.SCCore
 author: Vadimka
 commands:
-  afk:
-    description: Афк
-    usage: /<command>
   pinfo:
-    description: Информаци о игроке
+    description: Информация о игроке
     usage: /<command> <Игрок>
   fly:
-    description: Включить полет
+    description: Выключить/Включить полет игроку
     usage: /<command> [Игрок]
   scereload:
     description: Перезагрузка плагина
@@ -24,16 +21,10 @@ commands:
     usage: /<command> [Игрок]
   oi:
     description: Открыть инвентарь игрока
-    usage: /<command> <Игрок>
-  oe:
-    description: Открыть эндер сундук игрока
-    usage: /<command> <Игрок>
+    usage: /<command> <Игрок> [e/eq]
   sleepignore:
-    description: Игнорировать сон
+    description: Включить/Выключить игнорирование требования кровати, чтобы скипнуть ночь
     usage: /<command>
-  tpw:
-    description: Переместиться в спаун указанного мира
-    usage: /<command> <Мир> [Игрок]
   suicide:
     description: Самоуничтожиться
     usage: /<command>
@@ -58,18 +49,15 @@ commands:
   tpb:
     description: Телепортироваться к кровати игрока
     user: /<command> <Игрок>
-  undress:
-    description: Раздеть игрока
-    user: /<command> <Игрок>
   passive:
     description: Пассивный режим
     user: /<command>
   bunder:
-    description: Стави т блок под вами
+    description: Ставит блок под вами
     user: /<command>
-  fixspeed:
-    description: Починить скорость игроку
-    usage: /<command> <Player>
+  speed:
+    description: Установить скорость игроку
+    usage: /<command> <Скорость/default> [walk/fly] <Игрок>
   vanish:
     description: Скрыть себя от других игроков
     usage: /<command>
@@ -78,11 +66,9 @@ permissions:
     description: Все преимущества плагина
     default: op
     children:
-      scessentials.afk: true
       scessentials.feed.*: true
       scessentials.fly.*: true
       scessentials.heal.*: true
-      scessentials.openender: true
       scessentials.openinventory: true
       scessentials.pinfo: true
       scessentials.reload: true
@@ -97,12 +83,10 @@ permissions:
       scessentials.passivemode: true
       scessentials.blockunderme: true
       scessentials.vanish: true
+      scessentials.speed: true
   scessentials.suicide:
     description: Дает преимущества суицида
     default: true
-  scessentials.afk:
-    description: Дает возможность отлучиться от компьютера
-    default: false
   scessentials.combat:
     description: Дает возможность выходить из игры во время боя
     default: false
@@ -142,14 +126,8 @@ permissions:
   scessentials.heal.other:
     description: Дает преимущество вылечить других
     default: false
-  scessentials.openender:
-    description: Дает преимущество открыть эндер-сундук
-    default: false
   scessentials.openinventory:
     description: Дает преимущество открыть инвентарь игроков
-    default: false
-  scessentials.undress:
-    description: Дает право раздевать игроков
     default: false
   scessentials.pinfo:
     description: Показывает информацию об игроке
@@ -173,6 +151,7 @@ permissions:
       scessentials.teleport.toplayers: true
       scessentials.teleport.tobed: true
       scessentials.teleport.tobed.other: true
+      scessentials.world.teleport: true
   scessentials.teleport.toplayers:
     description: Возможность телепортироваться к игрокам
     default: false
@@ -202,26 +181,17 @@ permissions:
   scessentials.world.teleport.other:
     description: Дает преимущество телепортировать игроков между мирами
     default: false
-  scessentials.world.list:
-    description: Дает преимущество смотреть список миров
-    default: false
-  scessentials.world.unload:
+  scessentials.world.manage:
     description: Возможность отгружать миры
-    default: false
-  scessentials.world.load:
-    description: Возможность подгружать миры
-    default: false
-  scessentials.world.border:
-    description: Установить ограничение мира
-    default: false
-  scessentials.world.autoload:
-    description: Возможность устанавливать миры, которые автоматически загрузятся
     default: false
   scessentials.passivemode:
     description: Возможность использовать пассивный режим
     default: false
   scessentials.blockunderme:
     description: Возможность поставить блок под собой
+    default: false
+  scessentials.speed:
+    description: Возможность менять скорость у игроков
     default: false
   scessentials.vanish:
     description: Возможность скрыть себя от других игроков

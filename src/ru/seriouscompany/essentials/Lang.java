@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import ru.seriouscompany.essentials.api.Utils;
 
 public enum Lang {
 	PERMISSION_DENY("PermissionDeny","Вам не разрешено использывать данное действие"),
@@ -111,16 +110,16 @@ public enum Lang {
 	/**
 	 * Загрузить конфигурацию
 	 */
-	public static void loadConfiguration() {
+	public static void loadConfiguration(File dataFolder) {
 		
 		YamlConfiguration config;
 		
-		File f = new File(SCCore.getInstance().getDataFolder().getPath()+"/messages.yml");
+		File f = new File(dataFolder.getPath()+"/messages.yml");
 		if (f.exists() && f.canRead()) {
 			config = YamlConfiguration.loadConfiguration(f);
 			for (Lang value: Lang.values()) {
 				if (config.contains(value.configAlias))
-					value.message = Utils.replaceColorCodes(config.getString(value.configAlias));
+					value.message = config.getString(value.configAlias);
 			}
 		} else if (!f.exists()) {
 			if (!f.getParentFile().exists() && f.getParentFile().getParentFile().canWrite())
@@ -132,7 +131,7 @@ public enum Lang {
 			try {
 				config.save(f);
 			} catch (IOException e) {
-				SCCore.getInstance().getLogger().log(Level.WARNING,"Не удалось сохранить файл переводов",e);
+				Bukkit.getLogger().log(Level.WARNING,"Не удалось сохранить файл переводов",e);
 			}
 		}
 	}
